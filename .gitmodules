@@ -1,3 +1,6 @@
 [submodule "third_party/expand_langchain"]
 	path = third_party/expand_langchain
 	url = https://github.com/ldilab/expand_langchain.git
+[submodule "third_party/ClassEval"]
+	path = third_party/ClassEval
+	url = git@github.com:ldilab/ClassEval.git

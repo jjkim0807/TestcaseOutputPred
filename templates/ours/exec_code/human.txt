@@ -1,0 +1,39 @@
+{% raw %}
+I'm going to give you a Python program and a natural language pseudo code.
+The pseudo code has a testcase input and output pair, and some natural language assertions according to the given test case.
+Convert the natural language assertions into Python assert statements and insert them into the Python program.
+And convert the testcase input and output pair into Python assert statements and insert them into the Python program.
+And then, make the program in a form that can be run immediately to test the assertions with the given test case.
+"{{ }}" is a placeholder and should be replaced with the actual value. 
+The format of the output should be as follows:
+```python
+{{ ... }}
+{{ indentation if needed }} {{ assertion_statement }}
+{{ ... }}
+{{ ... more assertions if needed }}
+{{ ... }}
+
+EXPLANATION = '{{ explanation }}'
+TARGET_FUNC = {{ target_func }}
+INPUT = {{ input }}
+OUTPUT = {{ output }}
+
+try:
+    result = TARGET_FUNC(INPUT)
+except e:
+    print(f"Input: {INPUT}, Expected: {OUTPUT}, Got Error: {e}")
+    raise e
+
+assert result == OUTPUT, f'Input: {INPUT}, Expected: {OUTPUT}, Got: {result}'
+```
+{% endraw %}
+
+# Target Code
+```python
+{{ revised_code }}
+```
+
+# Natural Language Pseudo Code
+```python
+{{ tc_outputs }}
+```

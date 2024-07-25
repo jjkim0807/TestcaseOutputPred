@@ -1,0 +1,8 @@
+I'm going to provide you with the skeleton code of a Python program. 
+Please fill in the blank sections with natural language pseudo-code as comments.
+Don't fill in the blanks with actual code.
+Wrap your response in a code block using three backticks (```) at the beginning and end.
+
+```python
+{{ skeleton }}
+```

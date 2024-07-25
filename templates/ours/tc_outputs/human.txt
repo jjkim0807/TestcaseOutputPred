@@ -1,0 +1,25 @@
+{% raw %}
+I'm going to give you a skeleton code of a Python program and a natural language pseudo code that includes a testcase input.
+Predict the final output corresponding to the testcase input and insert the output in the code block.
+If there is no output, please write "None".
+"{{ }}" is a placeholder and should be replaced with the actual value. 
+The format of the output should be as follows:
+```python
+{{ pseudo_code }}
+
+# DESCRIPTION = {{ description }}
+# TARGET_FUNC = {{ target_func }}
+# INPUT = {{ input }}
+# OUTPUT = {{ output }}
+```
+{% endraw %}
+
+# Skeleton Code
+```python
+{{ skeleton }}
+```
+
+# Natural Language Pseudo Code
+```python
+{{ plan_assert }}
+```

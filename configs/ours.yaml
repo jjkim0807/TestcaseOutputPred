@@ -1,0 +1,229 @@
+source:
+  - name: ClassEval
+    path: FudanSELab/ClassEval
+    split: test
+
+dataset:
+  - name: target
+    primary_key: id
+    fields:
+      - name: id
+        source: ClassEval
+        type: ClassEval
+        key: task_id
+      - name: skeleton
+        source: ClassEval
+        type: ClassEval
+        key: skeleton
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, execute]
+      type: always
+    - pair: [execute, revise]
+      type: loop_until_success
+      kwargs:
+        max_iterations: 4
+    - pair: [revise, execute]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: plan
+          dependencies: [skeleton]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/default/plan"]
+        - name: tc_inputs
+          dependencies: [skeleton, plan]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+              - type: load_python_obj
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/ours/tc_inputs"]
+            flatten: true
+        - name: plan_assert
+          dependencies: [skeleton, plan, tc_inputs]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/ours/plan_assert"]
+        - name: tc_outputs
+          dependencies: [tc_inputs, plan_assert]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/ours/tc_outputs"]
+        - name: code
+          dependencies: [skeleton, plan]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/default/code"]
+        - name: revised_code
+          dependencies: [code]
+          type: assign
+
+    - name: execute
+      chains:
+        - name: prev_code
+          dependencies: [revised_code]
+          type: assign
+        - name: exec_code
+          dependencies: [revised_code, tc_outputs]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/ours/exec_code"]
+        - name: exec_result
+          dependencies: [exec_code]
+          type: execute
+          kwargs:
+            target: exec_code
+            timeout: 10
+        - name: status
+          dependencies: [exec_code, exec_result]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+              - type: load_python_obj
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/reflexion/status"]
+        - name: exec_result_history
+          dependencies: [exec_result]
+          type: append
+        - name: status_history
+          dependencies: [status]
+          type: append
+        - name: prev_code_history
+          dependencies: [prev_code]
+          type: append
+        - name: exec_code_all
+          dependencies: [exec_code]
+          type: assign
+        - name: exec_result_all
+          dependencies: [exec_result]
+          type: assign
+
+    - name: revise
+      chains:
+        - name: filter_failed
+          dependencies: []
+          type: select
+          kwargs:
+            src: [exec_code_all, exec_result_all]
+            dst: [exec_code_failed, exec_result_failed]
+            target: status
+            value: "failed"
+        - name: exec_code
+          dependencies: [filter_failed]
+          type: get_ith
+          kwargs:
+            target: exec_code_all
+            index: 0
+        - name: exec_code_history
+          dependencies: [exec_code]
+          type: append        
+        - name: exec_result
+          dependencies: [filter_failed]
+          type: get_ith
+          kwargs:
+            target: exec_result_all
+            index: 0
+        - name: revised_code
+          dependencies: [prev_code, exec_code, exec_result]
+          type: cot
+          kwargs:
+            llm:
+              max_retries: 1000000
+              max_tokens: 2048
+              model: gpt-35-turbo-16k
+              platform: azure
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/reflexion/revised_code"]

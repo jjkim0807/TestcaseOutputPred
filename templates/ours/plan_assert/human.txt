@@ -1,0 +1,35 @@
+{% raw %}
+I'm going to give you a skeleton code of a Python program, a natural language pseudo code, and a testcase input.
+Insert some pseudo natural language assertion statements into the natural language pseudo code.
+The assertions will probe the mid-execution state of the Python program, when the program is run with the given testcase input.
+Do not modify the pseudo code or the test case inputs.
+Do not insert any Python code into the natural language pseudo code.
+"{{ }}" is a placeholder and should be replaced with the actual value. 
+The format of the output should be as follows:
+```python
+{{ ... }}
+{{ indentation if needed }} # assert that {{ assertion_statement }}
+{{ ... }}
+{{ ... more assertions if needed }}
+{{ ... }}
+
+# EXPLANATION = '{{ explanation }}'
+# TARGET_FUNC = {{ target_func }}
+# INPUT = {{ input }}
+```
+{% endraw %}
+
+# Skeleton Code
+```python
+{{ skeleton }}
+```
+
+# Natural Language Pseudo Code
+```python
+{{ plan }}
+```
+
+# Testcase Input
+```python
+{{ tc_inputs }}
+```

@@ -1,0 +1,18 @@
+{% raw %}
+I'm going to give you the skeleton code of a Python program.
+Generate 5 to 10 testcase input and output pairs to test the program.
+"{{ }}" is a placeholder and should be replaced with the actual value. 
+The output is a Python list of strings.
+The format of the output should be as follows:
+```python
+[
+    "# EXPLANATION = '{{ explanation }}'\n# TARGET_FUNC= {{ target_func }}\n# INPUT = {{ input }}\n# OUTPUT = {{ output }}",
+    {{ ...more testcases }},
+]
+```
+{% endraw %}
+
+# Target Code
+```python
+{{ skeleton }}
+```

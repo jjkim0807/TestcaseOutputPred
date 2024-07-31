@@ -1,20 +1,23 @@
 source:
   - name: ClassEval
-    path: FudanSELab/ClassEval
-    split: test
+    type: huggingface
+    kwargs:
+      sort_key: task_id
+      path: FudanSELab/ClassEval
+      split: test
 
 dataset:
   - name: target
-    primary_key: id
-    fields:
-      - name: id
-        source: ClassEval
-        type: ClassEval
-        key: task_id
-      - name: skeleton
-        source: ClassEval
-        type: ClassEval
-        key: skeleton
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: ClassEval
+          key: task_id
+        - name: skeleton
+          source: ClassEval
+          key: skeleton
 
 graph:
   entry_point: initialize
@@ -27,14 +30,15 @@ graph:
     - name: initialize
       chains:
         - name: code
-          dependencies: [skeleton]
+          dependencies: []
+          input_keys: [skeleton]
           type: cot
           kwargs:
             llm:
               max_retries: 1000000
               max_tokens: 2048
-              model: gpt-35-turbo-16k
-              platform: azure
+              model: llama3.1:405b
+              platform: open_webui
               temperature: 0
               top_p: 1
             parsers:

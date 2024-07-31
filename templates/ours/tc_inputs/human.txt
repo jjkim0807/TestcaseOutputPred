@@ -1,5 +1,5 @@
-{% raw %}
-I'm going to give you a skeleton code of a Python program.
+# Instruction
+{% raw %}I'm going to give you a skeleton code of a Python program.
 Generate 5 to 10 testcase inputs to test the program.
 Do not generate the expected output.
 "{{ }}" is a placeholder and should be replaced with the actual value. 
@@ -7,11 +7,10 @@ The output is a Python list of strings.
 The format of the output should be as follows:
 ```python
 [
-    "# EXPLANATION = '{{ explanation }}'\n# TARGET_FUNC = {{ target_func }}\n# INPUT = {{ input }}",
+    "EXPLANATION = '{{ explanation }}'\nOBJECT = {{ object_class }}({{ object_params }})\nTARGET_FUNC = OBJECT.{{ target_func }}\nINPUT = {{ input }}",
     {{ ...more testcase inputs }},
 ]
-```
-{% endraw %}
+```{% endraw %}
 
 # Skeleton Code
 ```python

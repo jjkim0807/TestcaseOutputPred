@@ -1,23 +1,23 @@
-description: "GPT-35-16k reflexion"
-
 source:
   - name: ClassEval
-    path: FudanSELab/ClassEval
-    split: test
+    type: huggingface
+    kwargs:
+      sort_key: task_id
+      path: FudanSELab/ClassEval
+      split: test
 
 dataset:
   - name: target
-    primary_key: id
-    fields:
-      - name: id
-        source: ClassEval
-        type: ClassEval
-        key: task_id
-      - name: skeleton
-        source: ClassEval
-        type: ClassEval
-        key: skeleton
-
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: ClassEval
+          key: task_id
+        - name: skeleton
+          source: ClassEval
+          key: skeleton
 graph:
   entry_point: initialize
 
@@ -36,13 +36,14 @@ graph:
       chains:
         - name: plan
           dependencies: [skeleton]
+          input_keys: [skeleton]
           type: cot
           kwargs:
             llm:
               max_retries: 1000000
               max_tokens: 2048
-              model: gpt-35-turbo-16k
-              platform: azure
+              model: gpt-4o
+              platform: openai
               temperature: 0
               top_p: 1
             parsers:
@@ -51,15 +52,16 @@ graph:
               type: chat
               kwargs:
                 body_template_paths: ["templates/default/plan"]
-        - name: code
+        - name: initial_code
           dependencies: [skeleton, plan]
+          input_keys: [skeleton, plan]
           type: cot
           kwargs:
             llm:
               max_retries: 1000000
               max_tokens: 2048
-              model: gpt-35-turbo-16k
-              platform: azure
+              model: gpt-4o
+              platform: openai
               temperature: 0
               top_p: 1
             parsers:
@@ -70,42 +72,41 @@ graph:
                 body_template_paths: ["templates/default/code"]
         - name: testcases
           dependencies: [skeleton]
+          input_keys: [skeleton]
           type: cot
           kwargs:
+            flatten: true
             llm:
               max_retries: 1000000
               max_tokens: 2048
-              model: gpt-35-turbo-16k
-              platform: azure
+              model: gpt-4o
+              platform: openai
               temperature: 0
               top_p: 1
             parsers:
               - type: code_block
+              - type: load_python_obj
             prompt:
               type: chat
               kwargs:
                 body_template_paths: ["templates/reflexion/testcases"]
         - name: revised_code
-          dependencies: [code]
+          dependencies: [initial_code]
+          input_keys: [initial_code]
           type: assign
 
     - name: execute
       chains:
-        - name: prev_code
-          dependencies: [revised_code]
-          type: assign
-        - name: prev_code_history
-          dependencies: [prev_code]
-          type: append
         - name: exec_code
-          dependencies: [revised_code, testcases]
+          dependencies: []
+          input_keys: [revised_code, testcases]
           type: cot
           kwargs:
             llm:
               max_retries: 1000000
               max_tokens: 2048
-              model: gpt-35-turbo-16k
-              platform: azure
+              model: gpt-4o
+              platform: openai
               temperature: 0
               top_p: 1
             parsers:
@@ -116,57 +117,52 @@ graph:
                 body_template_paths: ["templates/reflexion/exec_code"]
         - name: exec_result
           dependencies: [exec_code]
+          input_keys: [exec_code]
           type: execute
           kwargs:
             target: exec_code
             timeout: 10
-        - name: exec_result_history
-          dependencies: [exec_result]
-          type: append
-        - name: exec_code_all
-          dependencies: [exec_code]
-          type: assign
-        - name: exec_code_all_history
-          dependencies: [exec_code_all]
-          type: append
-        - name: exec_result_all
-          dependencies: [exec_result]
-          type: assign
-        - name: exec_result_all_history
-          dependencies: [exec_result_all]
-          type: append
         - name: filter_failed
-          dependencies: [exec_code_all, exec_result_all]
+          dependencies: [exec_code, exec_result]
+          input_keys: [exec_code, exec_result]
           type: select
           kwargs:
-            src: [exec_code_all, exec_result_all]
+            src: [exec_code, exec_result]
             dst: [exec_code_failed, exec_result_failed]
-            tgt: exec_result_all
+            tgt: exec_result
             func: "lambda x: 'Exit Code: 0' not in x"
 
     - name: revise
       chains:
-        - name: exec_code
+        - name: prev_code
           dependencies: []
+          input_keys: [revised_code]
+          type: assign
+        - name: exec_code_failed_0
+          dependencies: []
+          input_keys: [exec_code_failed]
           type: get_ith
           kwargs:
             target: exec_code_failed
             index: 0
-        - name: exec_result
+        - name: exec_result_failed_0
           dependencies: []
+          input_keys: [exec_result_failed]
           type: get_ith
           kwargs:
             target: exec_result_failed
             index: 0
         - name: revised_code
-          dependencies: [prev_code, exec_code, exec_result]
+          dependencies: [prev_code, exec_code_failed_0, exec_result_failed_0]
+          input_keys: [prev_code, exec_code_failed_0, exec_result_failed_0]
+          key_map: {exec_code_failed_0: exec_code, exec_result_failed_0: exec_result}
           type: cot
           kwargs:
             llm:
               max_retries: 1000000
               max_tokens: 2048
-              model: gpt-35-turbo-16k
-              platform: azure
+              model: gpt-4o
+              platform: openai
               temperature: 0
               top_p: 1
             parsers:

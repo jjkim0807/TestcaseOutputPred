@@ -1,5 +1,5 @@
-{% raw %}
-I'm going to give you a Python program and a testcase input and output pair.
+# Instruction
+{% raw %}I'm going to give you a Python program and a testcase input and output pair.
 Insert the testcase input and output pair into the Python program after converting them into Python assert statements.
 And then, make the program in a form that can be run immediately, including the given code.
 Wrap your response in a code block using three backticks (```) at the beginning and end.
@@ -9,7 +9,8 @@ The format of the output should be as follows:
 {{ main code }}
 
 EXPLANATION = '{{ explanation }}'
-TARGET_FUNC = {{ target_func }}
+OBJECT = {{ object_class }}({{ object_params }})
+TARGET_FUNC = OBJECT.{{ target_func }}
 INPUT = {{ input }}
 OUTPUT = {{ output }}
 
@@ -20,8 +21,7 @@ except e:
     raise e
 
 assert result == OUTPUT, f'Input: {INPUT}, Expected: {OUTPUT}, Got: {result}'
-```
-{% endraw %}
+```{% endraw %}
 
 # Target Code
 ```python

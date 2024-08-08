@@ -1,0 +1,36 @@
+# Instruction
+{% raw %}I'm going to give you a Python program and a testcase.
+Insert the testcase input and output pair into the Python program after converting them into Python assert statements.
+And then, make the program in a form that can be run immediately, including the given code.
+Wrap your response in a code block using three backticks (```) at the beginning and end.
+The format of the output should be as follows:
+```python
+{{ main code }}
+
+EXPLANATION = '{{ explanation }}'
+CLS = {{ cls_name }}
+CONSTRUCTOR_ARGS = {{ constructor_args }}
+METHOD_NAME = '{{ method_name }}'
+METHOD_ARGS = {{ method_args }}
+OUTPUT = {{ method_output }}
+
+try:
+    obj = CLS(*CONSTRUCTOR_ARGS)
+    result = getattr(obj, METHOD_NAME)(*METHOD_ARGS)
+except e:
+    print(f"Constructor args: {CONSTRUCTOR_ARGS}, Method args: {METHOD_ARGS}, Expected: {OUTPUT}, Got Exception: {e}")
+    raise e
+
+assert result == OUTPUT, f"Constructor args: {CONSTRUCTOR_ARGS}, Method args: {METHOD_ARGS}, Expected: {OUTPUT}, Got: {result}"
+```{% endraw %}
+
+# Inputs
+## Target Code
+```python
+{{ revised_code }}
+```
+
+## Testcase
+```json
+{{ testcases }}
+```

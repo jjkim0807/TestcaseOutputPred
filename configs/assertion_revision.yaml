@@ -1,0 +1,196 @@
+source:
+  - name: ClassEval
+    type: huggingface
+    kwargs:
+      sort_key: task_id
+      path: FudanSELab/ClassEval
+      split: test
+  - name: ClassEval-like
+    type: yaml
+    kwargs:
+      sort_key: task_id
+      path: icl_example/classeval_like.yaml
+
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: ClassEval
+          key: task_id
+        - name: skeleton
+          source: ClassEval
+          key: skeleton
+  - name: example
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: ClassEval-like
+          key: task_id
+        - name: skeleton
+          source: ClassEval-like
+          key: skeleton
+        - name: initial_code
+          source: ClassEval-like
+          key: initial_code
+        - name: testcases
+          source: ClassEval-like
+          key: testcases
+        - name: target_code
+          source: ClassEval-like
+          key: target_code
+        - name: target_testcase
+          source: ClassEval-like
+          key: target_testcase
+        - name: assertion_code
+          source: ClassEval-like
+          key: assertion_code
+        - name: exec_code
+          source: ClassEval-like
+          key: exec_code
+        - name: exec_result
+          source: ClassEval-like
+          key: exec_result
+        - name: revised_code
+          source: ClassEval-like
+          key: revised_code
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, execute]
+      type: always
+    - pair: [execute, revise]
+      type: loop_until_success
+      kwargs:
+        max_iterations: 1
+    - pair: [revise, execute]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: initial_code
+          dependencies: []
+          input_keys: [skeleton]
+          type: cot
+          kwargs:
+            llm:
+              max_tokens: 4096
+              model: llama3.1:8b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/initial_code"]
+        - name: testcases
+          dependencies: [skeleton]
+          input_keys: [skeleton]
+          type: cot
+          kwargs:
+            flatten: true
+            llm:
+              max_tokens: 4096
+              model: llama3.1:8b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+              - type: load_python_obj
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/testcases"]
+        - name: revised_code
+          dependencies: [initial_code]
+          input_keys: [initial_code]
+          type: assign
+
+    - name: execute
+      chains:
+        - name: exec_code
+          dependencies: []
+          input_keys: [skeleton, revised_code, testcases]
+          key_map: { revised_code: target_code, testcases: target_testcase }
+          type: cot
+          kwargs:
+            llm:
+              max_tokens: 4096
+              model: llama3.1:8b-instruct-fp16
+              # model: llama3.1:8b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/assertion_code"]
+        - name: exec_result
+          dependencies: [exec_code]
+          input_keys: [exec_code, testcases]
+          type: execute
+          kwargs:
+            code_key: exec_code
+            testcase_key: testcases
+            stdin_key: stdin_str
+            timeout: 10
+        - name: filter_failed
+          dependencies: [exec_code, exec_result]
+          input_keys: [exec_code, exec_result]
+          type: select
+          kwargs:
+            src: [exec_code, exec_result]
+            dst: [exec_code_failed, exec_result_failed]
+            tgt: exec_result
+            func: "lambda x: 'Exit Code: 0' not in x"
+
+    - name: revise
+      chains:
+        - name: prev_code
+          dependencies: []
+          input_keys: [revised_code]
+          type: assign
+        - name: exec_code_failed_0
+          dependencies: []
+          input_keys: [exec_code_failed]
+          type: get_ith
+          kwargs:
+            target: exec_code_failed
+            index: 0
+        - name: exec_result_failed_0
+          dependencies: []
+          input_keys: [exec_result_failed]
+          type: get_ith
+          kwargs:
+            target: exec_result_failed
+            index: 0
+        - name: revised_code
+          dependencies: [prev_code, exec_code_failed_0, exec_result_failed_0]
+          input_keys: [skeleton, prev_code, exec_code_failed_0, exec_result_failed_0]
+          key_map: { exec_code_failed_0: exec_code, exec_result_failed_0: exec_result }
+          type: cot
+          kwargs:
+            llm:
+              max_tokens: 4096
+              model: llama3.1:8b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/revised_code"]

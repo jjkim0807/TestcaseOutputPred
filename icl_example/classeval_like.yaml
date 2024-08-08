@@ -1,0 +1,399 @@
+- task_id: ClassEval_like_0
+  skeleton: |-
+    import math
+
+    class LoanCalculator:
+        """
+        This class is used for calculating various aspects of a loan, including monthly payments,
+        total payments, and total interest.
+        """
+
+        def __init__(self, principal, annual_rate, years):
+            """
+            Initialize the loan calculator with principal, annual interest rate, and loan term in years.
+            :param principal: float, the principal amount of the loan
+            :param annual_rate: float, the annual interest rate (as a percentage)
+            :param years: int, the loan term in years
+            """
+
+        def monthly_payment(self):
+            """
+            Calculate the monthly payment for the loan.
+            :return: float, the monthly payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.monthly_payment()
+            536.82
+            """
+
+        def total_payment(self):
+            """
+            Calculate the total payment over the life of the loan.
+            :return: float, the total payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_payment()
+            193255.5
+            """
+
+        def total_interest(self):
+            """
+            Calculate the total interest paid over the life of the loan.
+            :return: float, the total interest amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_interest()
+            93255.5
+            """
+  initial_code: |-
+    import math
+
+    class LoanCalculator:
+        """
+        This class is used for calculating various aspects of a loan, including monthly payments,
+        total payments, and total interest.
+        """
+
+        def __init__(self, principal, annual_rate, years):
+            """
+            Initialize the loan calculator with principal, annual interest rate, and loan term in years.
+            :param principal: float, the principal amount of the loan
+            :param annual_rate: float, the annual interest rate (as a percentage)
+            :param years: int, the loan term in years
+            """
+            self.principal = principal
+            self.annual_rate = annual_rate
+            self.years = years
+
+        def monthly_payment(self):
+            """
+            Calculate the monthly payment for the loan.
+            :return: float, the monthly payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.monthly_payment()
+            536.82
+            """
+            monthly_rate = self.annual_rate / 12 / 100
+            n_payments = self.years * 12
+            payment = self.principal * (monthly_rate * (1 + monthly_rate) ** n_payments) / ((1 + monthly_rate) ** n_payments - 1)
+            return round(payment, 2)
+
+        def total_payment(self):
+            """
+            Calculate the total payment over the life of the loan.
+            :return: float, the total payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_payment()
+            193255.5
+            """
+            return round(self.monthly_payment() * self.years * 12, 2)
+
+        def total_interest(self):
+            """
+            Calculate the total interest paid over the life of the loan.
+            :return: float, the total interest amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_interest()
+            93255.5
+            """
+            return round(self.total_payment() - self.principal, 2)
+  testcases: |-
+    import math
+    
+    result = [
+        {
+            "explanation": "Calculate monthly payment for a 30-year loan with principal 100000 and 5% annual interest rate.",
+            "cls_name": "LoanCalculator",
+            "constructor_args": [100000, 5, 30],
+            "method_name": "monthly_payment",
+            "method_args": [],
+            "stdin_str": "",
+            "method_return": 536.82,
+            "stdout_str": "",
+        },
+        {
+            "explanation": "Calculate monthly payment for a 15-year loan with principal 200000 and 3.5% annual interest rate.",
+            "cls_name": "LoanCalculator",
+            "constructor_args": [200000, 3.5, 15],
+            "method_name": "monthly_payment",
+            "method_args": [],
+            "stdin_str": "",
+            "method_return": 1429.77,
+            "stdout_str": "",
+        },
+        {
+            "explanation": "Calculate total payment over the life of a 30-year loan with principal 100000 and 5% annual interest rate.",
+            "cls_name": "LoanCalculator",
+            "constructor_args": [100000, 5, 30],
+            "method_name": "total_payment",
+            "method_args": [],
+            "stdin_str": "",
+            "method_return": 193255.5,
+            "stdout_str": "",
+        },
+        {
+            "explanation": "Calculate total payment over the life of a 15-year loan with principal 200000 and 3.5% annual interest rate.",
+            "cls_name": "LoanCalculator",
+            "constructor_args": [200000, 3.5, 15],
+            "method_name": "total_payment",
+            "method_args": [],
+            "stdin_str": "",
+            "method_return": 257357.2,
+            "stdout_str": "",
+        },
+        {
+            "explanation": "Calculate total interest paid over the life of a 30-year loan with principal 100000 and 5% annual interest rate.",
+            "cls_name": "LoanCalculator",
+            "constructor_args": [100000, 5, 30],
+            "method_name": "total_interest",
+            "method_args": [],
+            "stdin_str": "",
+            "method_return": 93255.5,
+            "stdout_str": "",
+        },
+        {
+            "explanation": "Calculate total interest paid over the life of a 15-year loan with principal 200000 and 3.5% annual interest rate.",
+            "cls_name": "LoanCalculator",
+            "constructor_args": [200000, 3.5, 15],
+            "method_name": "total_interest",
+            "method_args": [],
+            "stdin_str": "",
+            "method_return": 57357.2,
+            "stdout_str": "",
+        }
+    ]
+  target_code: |-
+    import math
+
+    class LoanCalculator:
+        """
+        This class is used for calculating various aspects of a loan, including monthly payments,
+        total payments, and total interest.
+        """
+
+        def __init__(self, principal, annual_rate, years):
+            """
+            Initialize the loan calculator with principal, annual interest rate, and loan term in years.
+            :param principal: float, the principal amount of the loan
+            :param annual_rate: float, the annual interest rate (as a percentage)
+            :param years: int, the loan term in years
+            """
+            self.principal = principal
+            self.annual_rate = annual_rate
+            self.years = years
+
+        def monthly_payment(self):
+            """
+            Calculate the monthly payment for the loan.
+            :return: float, the monthly payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.monthly_payment()
+            536.82
+            """
+            monthly_rate = self.annual_rate / 12 / 100
+            n_payments = self.years * 12
+            payment = self.principal * (monthly_rate * (1 + monthly_rate) ** n_payments) / ((1 + monthly_rate) ** n_payments - 1)
+            return round(payment, 2)
+
+        def total_payment(self):
+            """
+            Calculate the total payment over the life of the loan.
+            :return: float, the total payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_payment()
+            193255.5
+            """
+            return round(self.monthly_payment() * self.years * 12, 2)
+
+        def total_interest(self):
+            """
+            Calculate the total interest paid over the life of the loan.
+            :return: float, the total interest amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_interest()
+            93255.5
+            """
+            return round(self.total_payment() - self.principal, 2)
+  target_testcase: |-
+    {'explanation': 'Calculate monthly payment for a 15-year loan with principal 200000 and 3.5% annual interest rate.', 'cls_name': 'LoanCalculator', 'constructor_args': [200000, 3.5, 15], 'method_name': 'monthly_payment', 'method_args': [], 'stdin_str': '', 'method_return': 1429.77, 'stdout_str': ''}
+
+  assertion_code: |-
+    import math
+
+    class LoanCalculator:
+        """
+        This class is used for calculating various aspects of a loan, including monthly payments,
+        total payments, and total interest.
+        """
+
+        def __init__(self, principal, annual_rate, years):
+            """
+            Initialize the loan calculator with principal, annual interest rate, and loan term in years.
+            :param principal: float, the principal amount of the loan
+            :param annual_rate: float, the annual interest rate (as a percentage)
+            :param years: int, the loan term in years
+            """
+            self.principal = principal
+            self.annual_rate = annual_rate
+            self.years = years
+
+        def monthly_payment(self):
+            """
+            Calculate the monthly payment for the loan.
+            :return: float, the monthly payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.monthly_payment()
+            536.82
+            """
+            monthly_rate = self.annual_rate / 12 / 100
+            assert monthly_rate == 0.002916666666666667, f"Expected monthly_rate to be 0.002916666666666667, but got {monthly_rate}"
+            n_payments = self.years * 12
+            assert n_payments == 180, f"Expected n_payments to be 180, but got {n_payments}"
+            payment = self.principal * (monthly_rate * (1 + monthly_rate) ** n_payments) / ((1 + monthly_rate) ** n_payments - 1)
+            assert round(payment, 2) == 1429.77, f"Expected payment to be 1429.77, but got {round(payment, 2)}"
+            return round(payment, 2)
+
+        def total_payment(self):
+            """
+            Calculate the total payment over the life of the loan.
+            :return: float, the total payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_payment()
+            193255.5
+            """
+            return round(self.monthly_payment() * self.years * 12, 2)
+
+        def total_interest(self):
+            """
+            Calculate the total interest paid over the life of the loan.
+            :return: float, the total interest amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_interest()
+            93255.5
+            """
+            return round(self.total_payment() - self.principal, 2)
+
+    obj = LoanCalculator(200000, 3.5, 15)
+    output = obj.monthly_payment()
+    assert output == 1429.77, f"Expected 1429.77, but got {output}"
+  exec_code: |-
+    import math
+
+    class LoanCalculator:
+        """
+        This class is used for calculating various aspects of a loan, including monthly payments,
+        total payments, and total interest.
+        """
+
+        def __init__(self, principal, annual_rate, years):
+            """
+            Initialize the loan calculator with principal, annual interest rate, and loan term in years.
+            :param principal: float, the principal amount of the loan
+            :param annual_rate: float, the annual interest rate (as a percentage)
+            :param years: int, the loan term in years
+            """
+            self.principal = principal
+            self.annual_rate = annual_rate
+            self.years = years
+
+        def monthly_payment(self):
+            """
+            Calculate the monthly payment for the loan.
+            :return: float, the monthly payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.monthly_payment()
+            536.82
+            """
+            monthly_rate = self.annual_rate / 12 / 100
+            assert monthly_rate == 0.002916666666666667, f"Expected monthly_rate to be 0.002916666666666667, but got {monthly_rate}"
+            n_payments = self.years * 12
+            assert n_payments == 180, f"Expected n_payments to be 180, but got {n_payments}"
+            payment = self.principal * (monthly_rate * (1 + monthly_rate) ** n_payments) / ((1 + monthly_rate) ** n_payments)
+            assert round(payment, 2) == 1429.77, f"Expected payment to be 1429.77, but got {round(payment, 2)}"
+            return round(payment, 2)
+
+        def total_payment(self):
+            """
+            Calculate the total payment over the life of the loan.
+            :return: float, the total payment amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_payment()
+            193255.5
+            """
+            return round(self.monthly_payment() * self.years * 12, 2)
+
+        def total_interest(self):
+            """
+            Calculate the total interest paid over the life of the loan.
+            :return: float, the total interest amount
+            >>> calculator = LoanCalculator(100000, 5, 30)
+            >>> calculator.total_interest()
+            93255.5
+            """
+            return round(self.total_payment() - self.principal, 2)
+
+
+    testcase = {
+        "explanation": "Calculate monthly payment for a 15-year loan with principal 200000 and 3.5% annual interest rate.",
+        "cls_name": "LoanCalculator",
+        "constructor_args": [200000, 3.5, 15],
+        "method_name": "monthly_payment",
+        "method_args": [],
+        "stdin_str": "",
+        "method_return": 1429.77,
+        "stdout_str": "",
+    }
+
+    obj = LoanCalculator(*testcase["constructor_args"])
+    output = getattr(obj, testcase["method_name"])(*testcase["method_args"])
+    assert output == testcase["method_return"], f"Expected {testcase['method_return']}, but got {output}"
+  exec_result: |-
+    Traceback (most recent call last):
+      File "/root/Projects/InsertAssertLLM/temp.py", line 68, in <module>
+        output = getattr(obj, testcase["method_name"])(*testcase["method_args"])
+      File "/root/Projects/InsertAssertLLM/temp.py", line 33, in monthly_payment
+        assert round(payment, 2) == 1429.77, f"Expected payment to be 1429.77, but got {round(payment, 2)}"
+    AssertionError: Expected payment to be 1429.77, but got 583.33  
+  revised_code: |-
+    # The formula used to calculate the monthly payment is incorrect.
+    # The correct formula for monthly payment should use the denominator (1 + monthly_rate) ** n_payments - 1.
+
+    import math
+
+    class LoanCalculator:
+        """
+        This class is used for calculating various aspects of a loan, including monthly payments,
+        total payments, and total interest.
+        """
+
+        def __init__(self, principal, annual_rate, years):
+            """
+            Initialize the loan calculator with principal, annual interest rate, and loan term in years.
+            :param principal: float, the principal amount of the loan
+            :param annual_rate: float, the annual interest rate (as a percentage)
+            :param years: int, the loan term in years
+            """
+            self.principal = principal
+            self.annual_rate = annual_rate
+            self.years = years
+
+        def monthly_payment(self):
+            """
+            Calculate the monthly payment for the loan.
+            :return: float, the monthly payment amount
+            """
+            monthly_rate = self.annual_rate / 12 / 100
+            n_payments = self.years * 12
+            payment = self.principal * (monthly_rate * (1 + monthly_rate) ** n_payments) / ((1 + monthly_rate) ** n_payments - 1)
+            return round(payment, 2)
+
+        def total_payment(self):
+            """
+            Calculate the total payment over the life of the loan.
+            :return: float, the total payment amount
+            """
+            return round(self.monthly_payment() * self.years * 12, 2)
+
+        def total_interest(self):
+            """
+            Calculate the total interest paid over the life of the loan.
+            :return: float, the total interest amount
+            """
+            return round(self.total_payment() - self.principal, 2)

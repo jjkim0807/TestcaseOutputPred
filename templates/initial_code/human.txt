@@ -1,14 +1,16 @@
+# Instruction
 I'm going to give you the skeleton code of a Python program.
 Your task is to implement the missing parts of the code.
+Do not leave any part of the code empty or just fill it with a comment without proper implementation.
 Wrap your response in a code block using three backticks (```) at the beginning and end.
-Output format:
-{% raw %}
-```python
-{{ your code here }}
-```
-{% endraw %}
 
-# Skeleton Code
+# Output format
+{% raw %}```python
+{{ your code here }}
+```{% endraw %}
+
+# Inputs
+## Skeleton Code
 ```python
 {{ skeleton }}
 ```

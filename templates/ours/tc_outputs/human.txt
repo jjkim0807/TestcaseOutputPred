@@ -8,7 +8,9 @@ The format of the output should be as follows:
 {{ pseudo_code }}
 
 EXPLANATION = '{{ explanation }}'
-OBJECT = {{ object_class }}({{ object_params }})
+OBJECT_CLASS = {{ object_class }}
+OBJECT_PARAMS = {{ object_params }}
+OBJECT = OBJECT_CLASS ( OBJECT_PARAMS )
 TARGET_FUNC = OBJECT.{{ target_func }}
 INPUT = {{ input }}
 OUTPUT = {{ output }}

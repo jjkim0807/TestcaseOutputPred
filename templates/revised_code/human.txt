@@ -1,0 +1,25 @@
+# Instruction
+I'm going to give you a python code, and its execution result.
+Based on the execution result, describe the problem in the executed code and the way to fix it. 
+Then write a revised version of the executed code that fixes the problem.
+Remove every testing code or assertion in the revised code.
+Do not omit the other class methods that are not related to the problem.
+
+# Output Format
+{% raw %}```python
+# {{ problem of the executed code }}
+# {{ way to fix the problem }}
+
+{{ revised code without testing code }}
+```{% endraw %}
+
+# Inputs
+## Executed Code
+```python
+{{ exec_code }}
+```
+
+## Execution result
+```plaintext
+{{ exec_result }}
+```

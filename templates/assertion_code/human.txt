@@ -1,0 +1,30 @@
+{% raw %}# Instruction
+I'm going to give you a skeleton code of a Python program, its implementation and a testcase.
+Your task is 
+1. to inject some assertion statements in the middle of the implementation code.
+2. to put an assertion statement to check the final return value of the target function.
+You should predict the exact value or type of the intermediate variables only according to the given testcase.
+Use the given testcase, not the testcase in the problem description.
+Do not add assertions at the other class methods that are not related to the assertion statements.
+Do not omit the other class methods that are not related to the assertion statements.
+"{{ }}" in the output format represents the placeholder that you need to fill in.
+
+# Output format
+```python
+import {{ external libraries if needed }}
+
+{{ your assertion injected code here }}
+    
+{{ final return value assertion code here }}
+```{% endraw %}
+
+# Inputs
+## Implementation
+```python
+{{ target_code }}
+```
+
+## Testcase
+```python
+{{ target_testcase }}
+```

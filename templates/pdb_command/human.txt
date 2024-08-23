@@ -1,0 +1,26 @@
+{% raw %}# Instruction
+I'm going to give you a skeleton code of a Python program, its implementation and a testcase.
+Your task is to generate a pdb command to check the intermediate variables and the final return value of the program.
+You should predict the exact value or type of the intermediate variables only according to the given testcase.
+Use the given testcase, not the testcase in the problem description.
+"{{ }}" in the output format represents the placeholder that you need to fill in.
+
+# Output format
+```json
+{
+    "explanation": "{{ explanation }}",
+    "pdb_command": "{{ pdb_command }}",
+    "expected_output": "{{ expected_output }}"
+}
+```{% endraw %}
+
+# Inputs
+## Implementation
+```python
+{{ target_code }}
+```
+
+## Testcase
+```python
+{{ target_testcase }}
+```

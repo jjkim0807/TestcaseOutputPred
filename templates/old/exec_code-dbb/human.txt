@@ -1,0 +1,37 @@
+# Instruction
+{% raw %}I'm going to give you a coding problem, a Python program, and some testcases for it.
+Your task is
+1. to find necessary imports for the given code and write them in python format.
+2. to convert the testcases into Python assertions.
+Here are some conditions.
+1. The given code can be wrong, but you should not modify it.
+2. The given testcases are just string, so you need to convert them into Python assertions.
+3. The generated assertion should compare the expected output and the actual output.
+4. You should not include the target code in the final output. Just provide the converted assertions.
+
+# Output format
+```json
+{
+    "imports": "{{ imports }}",
+    "assertions": [
+        "{{ assertion }}",
+        ...
+    ]
+}
+```{% endraw %}
+
+# Inputs
+## Problem Description
+```plaintext
+{{ question }}
+```
+
+## Target Code
+```python
+{{ code }}
+```
+
+## Testcase
+```json
+{{ testcases }}
+```

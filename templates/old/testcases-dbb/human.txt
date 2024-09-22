@@ -1,0 +1,27 @@
+# Instruction
+I'm going to give you a coding problem and public testcases for it.
+Generate some testcases for the problem.
+Here are some conditions.
+1. Include the public testcases in your response.
+2. Generate at least 5 testcases for the problem.
+3. The output is a JSON list of string.
+4. The format of string is same as the public testcases.
+5. Wrap your response in a code block using three backticks (```) at the beginning and end.
+
+# Output format
+{% raw %}```json
+[
+    "{{ testcase }}",
+    "{{ ...more testcases }}",
+]```{% endraw %}
+
+# Inputs
+## Problem Description
+```plaintext
+{{ question }}
+```
+
+## Public Testcases
+```json
+{{ public_testcases }}
+```

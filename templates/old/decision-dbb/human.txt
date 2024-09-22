@@ -1,0 +1,27 @@
+# Instruction
+{% raw %}I'm going to give you a coding problem, a Python program, and the executed result for it.
+Decide the given program is correct or not based on the problem description and result.
+Wrap your response in a code block using three backticks (```) at the beginning and end.
+The format of the output should be as follows:
+```json
+{
+    "reflection": "{{ reflection }}",
+    "correct": {{ correct }}
+}
+```{% endraw %}
+
+# Inputs
+## Problem Description
+```plaintext
+{{ question }}
+```
+
+## Executed Code
+```python
+{{ exec_code }}
+```
+
+## Exectued Result
+```json
+{{ exec_result }}
+```

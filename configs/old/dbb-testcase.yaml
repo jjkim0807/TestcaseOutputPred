@@ -1,0 +1,118 @@
+source:
+  - name: DebugBench
+    type: huggingface
+    kwargs:
+      sort_key: slug
+      path: Rtian/DebugBench
+      split: test
+
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      query: where('language') == 'python3'
+      fields:
+        - name: id
+          source: DebugBench
+          key: slug
+        - name: language
+          source: DebugBench
+          key: language
+        - name: question
+          source: DebugBench
+          key: question
+        - name: public_testcases
+          source: DebugBench
+          key: examples
+        - name: wrong_code
+          source: DebugBench
+          key: buggy_code
+        - name: right_code
+          source: DebugBench
+          key: solution
+
+# source:
+#   - name: DebugBench_cache
+#     type: json
+#     kwargs:
+#       path: results/reflexion-dbb/results_merged_1.json
+#       sort_key: id
+# dataset:
+#   - name: target
+#     type: dict
+#     kwargs:
+#       primary_key: id
+#       fields:
+#         - name: id
+#           source: DebugBench_cache
+#           key: id
+#         - name: question
+#           source: DebugBench_cache
+#           key: question
+#         - name: wrong_code
+#           source: DebugBench_cache
+#           key: wrong_code
+#         - name: right_code
+#           source: DebugBench_cache
+#           key: right_code
+#         - name: gen_testcases
+#           source: DebugBench_cache
+#           key: gen_testcases
+
+# conda activate ArchCode
+# export PYTHONPATH="third_party/expand_langchain:$PYTHONPATH"
+# python run.py generator --config_path=configs/dbb-testcase.yaml --rerun=False --max_concurrency=16 - run - merge_json - exit
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: public_testcases_str
+          dependencies: []
+          input_keys: [public_testcases]
+          type: custom_lambda
+          kwargs:
+            src: ["public_testcases"]
+            distribute: False
+            func: |
+              def func(public_testcases):
+                  import json
+                  return json.dumps(public_testcases, indent=2, sort_keys=True)
+
+        - name: gen_testcases
+          dependencies: [public_testcases_str]
+          input_keys: [question, public_testcases_str]
+          key_map: { public_testcases_str: public_testcases }
+          type: cot
+          kwargs:
+            flatten: true
+            llm:
+              max_tokens: 4096
+              model: llama3.1:70b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+              - type: load_json
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/testcases-dbb"]
+
+        - name: testcase_inputs
+          dependencies: [gen_testcases]
+          input_keys: [gen_testcases]
+          type: custom_lambda
+          kwargs:
+            src: ["gen_testcases"]
+            distribute: True
+            func: |
+              def func(tc):
+                  return tc.split("Output:")[0].strip()

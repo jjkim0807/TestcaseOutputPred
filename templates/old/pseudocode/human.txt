@@ -1,0 +1,18 @@
+# Instruction
+I'm going to provide you a coding problem.
+You need to write several pseudocodes to solve the problem.
+Here are some conditions.
+1. The pseudocode will be abstractly debugged by the AI, so define the variables and functions properly without specifying all the details too specifically.
+2. Add line numbers to the pseudocode.
+3. Wrap your response in a code block using three backticks (```) at the beginning and end.
+
+# Output Format
+{% raw %}```plaintext
+{{ pseudocode}}
+```{% endraw %}
+
+# Inputs
+## Question
+```plaintext
+{{ question }}
+```

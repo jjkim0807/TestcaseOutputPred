@@ -1,0 +1,135 @@
+source:
+  - name: DebugBench_cache
+    type: json
+    kwargs:
+      path: results/dbb-testcase/results_merged_1.json
+      sort_key: id
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: DebugBench_cache
+          key: id
+        - name: question
+          source: DebugBench_cache
+          key: question
+        - name: wrong_code
+          source: DebugBench_cache
+          key: wrong_code
+        - name: right_code
+          source: DebugBench_cache
+          key: right_code
+        - name: gen_testcases
+          source: DebugBench_cache
+          key: gen_testcases
+
+# python run.py generator --config_path=configs/reflexion-dbb.yaml --rerun=False --max_concurrency=16 - run - merge_json - exit
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: gen_testcases_str
+          dependencies: []
+          input_keys: [gen_testcases]
+          key_map: { gen_testcases: testcases }
+          type: custom_lambda
+          kwargs:
+            distribute: False
+            src: ["testcases"]
+            func: |
+              def func(testcases):
+                  import json
+                  return json.dumps(testcases, indent=2, ensure_ascii=False)
+
+        - name: _wrong_exec_code
+          dependencies: [gen_testcases_str]
+          input_keys: [question, gen_testcases_str, wrong_code]
+          key_map: { gen_testcases_str: testcases, wrong_code: code }
+          type: cot
+          kwargs:
+            llm:
+              max_tokens: 4096
+              model: llama3.1:70b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+              - type: load_json
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/exec_code-dbb"]
+        - name: wrong_exec_code
+          dependencies: [_wrong_exec_code]
+          input_keys: [_wrong_exec_code, wrong_code]
+          key_map: { _wrong_exec_code: testcase, wrong_code: code }
+          type: custom_lambda
+          kwargs:
+            src: ["testcase", "code"]
+            func: |
+              def func(testcase, code):
+                  imports = testcase["imports"]
+                  return [
+                      imports + "\n" + code + "\n" + assertion
+                      for assertion in testcase["assertions"]
+                  ]
+        - name: wrong_exec_result
+          dependencies: [wrong_exec_code]
+          input_keys: [wrong_exec_code]
+          key_map: { wrong_exec_code: exec_code }
+          type: execute
+          kwargs:
+            code_key: exec_code
+            timeout: 10
+
+        - name: _right_exec_code
+          dependencies: [gen_testcases_str]
+          input_keys: [question, gen_testcases_str, right_code]
+          key_map: { gen_testcases_str: testcases, right_code: code }
+          type: cot
+          kwargs:
+            llm:
+              max_tokens: 4096
+              model: llama3.1:70b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+              - type: load_json
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["templates/exec_code-dbb"]
+        - name: right_exec_code
+          dependencies: [_right_exec_code]
+          input_keys: [_right_exec_code, right_code]
+          key_map: { _right_exec_code: testcase, right_code: code }
+          type: custom_lambda
+          kwargs:
+            src: ["testcase", "code"]
+            func: |
+              def func(testcase, code):
+                  imports = testcase["imports"]
+                  return [
+                      imports + "\n" + code + "\n" + assertion
+                      for assertion in testcase["assertions"]
+                  ]
+        - name: right_exec_result
+          dependencies: [right_exec_code]
+          input_keys: [right_exec_code]
+          key_map: { right_exec_code: exec_code }
+          type: execute
+          kwargs:
+            code_key: exec_code
+            timeout: 10

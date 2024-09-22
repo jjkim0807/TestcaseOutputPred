@@ -1,0 +1,50 @@
+# Instruction
+I'm going to provide you a coding problem, a pseudocode, and a testcase input.
+Your task is to simulate pseudo-pdb debugging for the given pseudocode and testcase.
+Here is the process you should follow:
+1. generate an abstract pdb command to debug the pseudocode.
+2. provide the expected abstract pdb output for the pseudocode.
+3. Repeat 1-2 until the pseudocode exits.
+4. If the pseudocode exits, predict the final output.
+Here are some conditions:
+1. The abstract pdb command should be a high-level command
+2. Do not execute every step of the pseudocode, only the steps that are necessary to predict the final output.
+3. The output is a list of pdb logs and the final output.
+4. Each pdb log should contain the following fields:
+  - current_line: the line number of the pseudocode where the previous command was ended and the current command will be executed
+  - command: the abstract pdb command executed
+  - output_explanation: reasoning behind the expected output
+  - output: the expected output of the pdb command. if the command does not have an output, use empty string ""
+5. Wrap your response in a code block using three backticks (```) at the beginning and end.
+
+# Output Format
+{% raw %}```json
+{
+  "pdb_log": [
+    {
+      "current_line": {{ current_line }},
+      "command": {{ command }},
+      "output_explanation": {{ output_explanation }},
+      "output": {{ output }}
+    },
+    ...
+  ],
+  "final_output": {{ final_output }}
+}
+````{% endraw %}
+
+# Inputs
+## Question
+```plaintext
+{{ question }}
+```
+
+## Psuedocode
+```plaintext
+{{ pseudocode }}
+```
+
+## Testcase
+```plaintext
+{{ testcase }}
+```

@@ -1,0 +1,31 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Code
+```
+{{ code }}
+```
+
+## Testcase Input
+```plaintext
+{{ tc_input }}
+```
+
+# Instruction
+I provided you a coding problem, its code, and a testcase input.
+You need to predict the testcase output with the provided code.
+Here are some conditions.
+- The output should be written in a code block using three backticks (```).
+- In 'explanation' key, you need to provide the reason why you think the output is correct.
+- In 'output' key, you need to provide the output of the testcase input.
+
+# Output Format
+{% raw %}```json
+{
+    "explanation": {{ explanation }},
+    "output": {{ expected_output }}
+}
+```{% endraw %}

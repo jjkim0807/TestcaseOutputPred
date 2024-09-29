@@ -1,0 +1,56 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Pseudocode
+```plaintext
+{{ pseudocode }}
+```
+
+## Testcase Input
+```plaintext
+{{ tc_input }}
+```
+
+# Instruction
+I provided you a coding problem, its pseudocode and a testcase input.
+You need to predict the testcase output by simulating pdb debugging with the provided pseudocode.
+Here are some conditions.
+- The pdb logs should be listed in the order they are executed.
+- The pdb log should be a list of dictionaries, where each dictionary contains the following
+    - prev_line: The line number before executing the command.
+    - explanation: The explanation of the pdb command.
+    - command: The pdb command.
+        - several types of pdb commands: 
+            - n: next (different from step, next goes to the next line)
+            - s: step (different from next, step goes into the function)
+            - until \<line_number\>: run until the line number ex) until 10
+            - p \<variable\>: print the variable ex) p var1
+            - r: return
+            - q: quit
+        - The commands can be concatenated with a comma.
+            ex1) n, p var1, p var2
+            ex2) s, p var1
+            ex3) until 10, p var1
+    - output: The output of the pdb command.
+    - current_line: The line number after executing the command.
+- The output should be written in a code block using three backticks (```).
+- Predict the expected output using the minimum number of pdb commands.
+
+# Output Format
+{% raw %}```json
+{
+    "pdb_log": [
+        {
+            "current_line": {{ current_line }},
+            "explanation": {{ explanation }},
+            "command": {{ command }},
+            "output": {{ output }}
+        },
+        ...
+    ],
+    "output": {{ expected_output }}
+}
+```{% endraw %}

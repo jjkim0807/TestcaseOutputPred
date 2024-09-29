@@ -1,0 +1,42 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Solution
+```python
+{{ solution }}
+```
+
+# Instruction
+I'm going to provide you a coding problem and its solution code.
+You need to write 3 types of pseudocodes based on the solution code.
+Here are some conditions.
+- Each of the pseudocodes should describe the same algorithm.
+- Each pseudocodes should be written in a separate code block using three backticks (```) at the beginning and end.
+- The first pseudocode should be line by line pseudocode.
+    - It should be written in a way that each line of the pseudocode corresponds to a line of the solution code.
+- The second pseudocode should be middle level abstraction pseudocode.
+    - The simplified part should be a function call with meaningful name in these format:
+        - var1, var2, ... = func1(var3, var4, ...) # comment
+        - func2(var5, var6, ...) # comment
+    - The comment should be a one-line description of what the code does.
+    - The comment should explain the purpose of the function. Do not just say "Process the queue" or "Initialize the queue". Explain what the queue is used for, or what the queue contains.
+    - You don't need to implement the simplified functions, just write the function calls with meaningful names.
+- The third pseudocode should be pure natural language pseudocode.
+    - It should be written using plain English.
+
+# Output Format{% raw %}
+1. line by line pseudocode
+```python
+{{ pc_lbl }}
+```
+2. middle level abstraction pseudocode
+```python
+{{ pc_func }}
+```
+3. Pure natural language pseudocode
+```plaintext
+{{ pc_nl }}
+```{% endraw %}

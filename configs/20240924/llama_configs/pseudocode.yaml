@@ -1,0 +1,82 @@
+source:
+  - name: code_contests
+    type: json
+    kwargs:
+      sort_key: id
+      path: data/code_contests.json
+  - name: example
+    type: yaml
+    kwargs:
+      sort_key: id
+      path: configs/20240924/icl_examples-codecontests.yaml
+
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: code_contests
+          key: id
+        - name: problem
+          source: code_contests
+          key: question
+        - name: solution
+          source: code_contests
+          key: solution
+        - name: testcases
+          source: code_contests
+          key: testcases
+  - name: example
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: example
+          key: id
+        - name: problem
+          source: example
+          key: question
+        - name: solution
+          source: example
+          key: solution
+        - name: pc_lbl
+          source: example
+          key: pc_lbl
+        - name: pc_func
+          source: example
+          key: pc_func
+        - name: pc_nl
+          source: example
+          key: pc_nl
+
+# conda activate ArchCode
+# export PYTHONPATH="third_party/expand_langchain:$PYTHONPATH"
+# python run.py generator --config_path=configs/dbb-testcase.yaml --rerun=False --max_concurrency=16 - run - merge_json - exit
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: pseudocodes
+          dependencies: []
+          input_keys: [problem, solution]
+          type: cot
+          kwargs:
+            llm:
+              max_tokens: 8192
+              model: llama3.1:70b-instruct-fp16
+              platform: open_webui
+              temperature: 0
+              top_p: 1
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20240924/templates/pseudocode"]

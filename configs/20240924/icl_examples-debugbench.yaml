@@ -1,0 +1,84 @@
+- question: |
+    You are given an array of integers `arr` and an integer `k`. Return the number of unique subarrays of length `k` such that the sum of the elements in the subarray is divisible by `k`.
+
+    A subarray is a contiguous sequence of elements from the original array.
+
+    Constraints:
+    - 1 <= arr.length <= 10^5
+    - 1 <= arr[i] <= 10^5
+    - 1 <= k <= 10^5
+  solution: |
+    class Solution:
+        def countDivisibleSubarrays(self, arr: List[int], k: int) -> int:
+            mod_count = defaultdict(int)
+            mod_count[0] = 1
+            
+            cumulative_sum = 0
+            count = 0
+            
+            for num in arr:
+                cumulative_sum += num
+                mod = cumulative_sum % k
+                
+                if mod < 0:
+                    mod += k
+                
+                count += mod_count[mod]
+                
+                mod_count[mod] += 1
+                
+            return count
+  pc_4: | # line-by-line pseudocode
+    class Solution:
+        def countDivisibleSubarrays(self, arr: List[int], k: int) -> int:
+            mod_count = create_dict() # create a dictionary to store the count of each mod
+            mod_count = init_dict(mod_count, 0, 1) # initialize the count of mod 0 to 1
+
+            cumulative_sum = 0 # initialize the cumulative sum to 0
+            count = 0 # initialize the count of valid subarrays to 0
+
+            for num in arr: # iterate through the array
+                cumulative_sum = cumulate(cumulative_sum, num) # add the current number to the cumulative sum
+                mod = calc_mod(cumulative_sum, k) # calculate the mod of the cumulative sum
+
+                if mod < 0: # if the mod is negative
+                    mod = adjust_mod(mod, k) # adjust the mod to be positive
+
+                count = increment_count(count, mod_count[mod]) # increment the count of valid subarrays by the count of subarrays with the current mod
+
+                mod_count = increment_mod_count(mod_count, mod) # increment the count of subarrays with the current mod
+            
+            return count # return the total count of valid subarrays
+  pc_3: | # abstract pc_4
+    class Solution:
+        def countDivisibleSubarrays(self, arr: List[int], k: int) -> int:
+            mod_count = create_and_init_dict() # create and initialize a dictionary to store the count of each mod
+
+            cumulative_sum = 0 # initialize the cumulative sum to 0
+            count = 0 # initialize the count of valid subarrays to 0
+
+            for num in arr: # iterate through the array
+                cumulative_sum = cumulate(cumulative_sum, num) # add the current number to the cumulative sum
+                mod = calc_mod(cumulative_sum, k) # calculate the mod of the cumulative sum
+                count = increment_count(count, mod_count[mod]) # increment the count of valid subarrays by the count of subarrays with the current mod
+                mod_count = increment_mod_count(mod_count, mod) # increment the count of subarrays with the current mod
+  pc_2: |
+    class Solution:
+        def countDivisibleSubarrays(self, arr: List[int], k: int) -> int:
+            mod_count, cumulative_sum, count = init_vars() # initialize the variables
+
+            for num in arr: # iterate through the array
+                cumulative_sum = cumulate(cumulative_sum, num) # add the current number to the cumulative sum
+                mod = calc_mod(cumulative_sum, k) # calculate the mod of the cumulative sum
+                count, mod_count = update_counts(count, mod_count, mod) # update the count of valid subarrays and the count of subarrays with the current mod
+
+            return count # return the total count of valid subarrays
+  pc_1: |
+    class Solution:
+        def countDivisibleSubarrays(self, arr: List[int], k: int) -> int:
+            count = init_vars() # initialize the variables
+
+            for num in arr: # iterate through the array
+                count = update_counts(count, num, k) # update the count of valid subarrays
+
+            return count # return the total count of valid subarrays

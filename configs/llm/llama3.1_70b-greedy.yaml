@@ -1,0 +1,5 @@
+max_tokens: 2048
+model: gpt-4o-mini
+platform: openai
+temperature: 0
+top_p: 1

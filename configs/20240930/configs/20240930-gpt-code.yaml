@@ -1,0 +1,31 @@
+source:
+  bigcodebench: !inc configs/20240930/configs/inc/source-bigcodebench.yaml
+  example: !inc configs/20240930/configs/inc/source-example.yaml
+
+dataset:
+  - !inc configs/20240930/configs/inc/dataset-target.yaml
+  - !inc configs/20240930/configs/inc/dataset-example.yaml
+  
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: code-gen
+          dependencies: []
+          input_keys: [problem]
+          type: cot
+          kwargs:
+            flatten: true
+            llm: !inc configs/llm/gpt_4o_mini-greedy.yaml
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20240930/templates/code"]

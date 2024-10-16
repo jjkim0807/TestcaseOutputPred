@@ -1,0 +1,57 @@
+name: target
+type: dict
+kwargs:
+  cache_dir: cache/20240924-target
+  primary_key: id
+  fields:
+    - name: id
+      source: bigcodebench
+      key: task_id
+    - name: problem
+      source: bigcodebench
+      key: complete_prompt
+    - name: soultion
+      source: bigcodebench
+      key: canonical_solution
+    - name: test
+      source: bigcodebench
+      key: test
+  custom_lambda: |
+    def func(d):
+        import re
+
+        def parse_test_code(test_code):
+            # Regular expressions to find 'result' and 'expected'
+            result_re = re.compile(r"result = task_func\((.*?)\)")
+            expected_re = re.compile(r"expected = (.+)")
+
+            # Lists to hold parsed inputs and expected outputs
+            tc_input = []
+            tc_output = []
+
+            # Split the test code into lines
+            lines = test_code.split('\n')
+
+            # Iterate over the lines and find the matching result and expected
+            for line in lines:
+                result_match = result_re.search(line)
+                expected_match = expected_re.search(line)
+
+                # If the line contains 'result = task_func', extract the input
+                if result_match:
+                    input_str = result_match.group(1)
+                    # Add the parsed input to the tc_input list
+                    tc_input.append(input_str.strip())
+
+                # If the line contains 'expected =', extract the expected output
+                if expected_match:
+                    expected_str = expected_match.group(1)
+                    # Add the parsed output to the tc_output list
+                    tc_output.append(eval(expected_str.strip()))  # Safely evaluate the dictionary
+
+            return {'tc_input': tc_input, 'tc_output-gt': tc_output}
+        
+        test = parse_test_code(d['test'])
+        d = {**d, **test}
+        del d['test']
+        return d

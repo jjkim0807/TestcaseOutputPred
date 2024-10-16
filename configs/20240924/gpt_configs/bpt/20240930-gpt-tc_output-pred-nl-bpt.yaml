@@ -3,7 +3,7 @@ source:
     type: json
     kwargs:
       sort_key: id
-      path: results/20240924_pseudocode/splitted.json
+      path: results/20240924-gpt-pc_pred-nl/parsed.json
   - name: example
     type: yaml
     kwargs:
@@ -22,9 +22,6 @@ dataset:
         - name: problem
           source: code_contests
           key: problem
-        - name: solution
-          source: code_contests
-          key: solution
         - name: tc_input
           source: code_contests
           key: tc_input
@@ -33,7 +30,7 @@ dataset:
           key: tc_output
         - name: pseudocode
           source: code_contests
-          key: pc_func
+          key: pc_pred-nl
   - name: example
     type: dict
     kwargs:
@@ -50,14 +47,15 @@ dataset:
           key: tc_input
         - name: pseudocode
           source: example
-          key: pc_func
+          key: pc_nl
         - name: tc_output
           source: example
-          key: tc_output-func-pdb
+          key: tc_output-nl-bpt
 
+# cd ~/Projects/InsertAssertLLM
 # conda activate ArchCode
 # export PYTHONPATH="third_party/expand_langchain:$PYTHONPATH"
-# python run.py generator --config_path=configs/20240924/gpt_configs/20240924-gpt-tc_output-gold-pdb-func.yaml --rerun=False --max_concurrency=16 - run - merge_json - exit
+# python run.py generator --config_path=configs/20240924/gpt_configs/20240924-gpt-tc_output-pred-nl.yaml --rerun=False --max_concurrency=8 - run - merge_json - exit
 graph:
   entry_point: initialize
 
@@ -85,4 +83,4 @@ graph:
             prompt:
               type: chat
               kwargs:
-                body_template_paths: ["configs/20240924/templates/tc_output-pdb"]
+                body_template_paths: ["configs/20240924/templates/tc_output-bpt"]

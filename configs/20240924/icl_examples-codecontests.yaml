@@ -274,10 +274,7 @@
     Build adjacency list and list of edges from input
     Compute the result based on the graph and k
     Output the results in the required format
-  tc_input: |
-    {
-        "input": "2 1 1\n2 1\n"
-    }
+  tc_input: "2 1 1\n2 1\n"
   tc_output-vanilla: |
     {
         "explanation": "Since there are only 2 people and they become friends on day 1, both have exactly 1 friend (each other), which meets the requirement of k=1. Therefore, both can go on the trip on day 1. The maximum number of people that can go on the trip on day 1 is 2.",
@@ -476,3 +473,82 @@
         ],
         "output": "2"
     }
+  tc_output-func-bpt: |
+    Let's break down the problem step by step for the given input:
+
+    ### Input
+    ```
+    2 1 1
+    2 1
+    ```
+
+    - `n = 2`: There are 2 people.
+    - `m = 1`: There is 1 day.
+    - `k = 1`: Each person on the trip must have at least 1 friend also on the trip.
+    - Day 1 friendship: Person 2 and Person 1 become friends.
+
+    ### Pseudocode Execution
+
+    1. **Adjacency list initialization:**
+      - We create an adjacency list `a` to represent friendships:
+        - `a = [{}, {}]` (Initially, no one is friends with anyone.)
+
+    2. **Reading friendship information:**
+      - On day 1, Person 2 and Person 1 become friends.
+        - `a = [{1}, {0}]`
+        - Person 1 is friends with Person 2 and vice versa.
+      - `uv = [(1, 0)]` (Store the friendship between Person 1 and Person 2.)
+
+    3. **Solve function logic:**
+      - Initialize `nn` to represent the degrees (number of friends) of each person:
+        - `nn = [1, 1]` (Each person has exactly 1 friend after the friendship is established.)
+      - Initialize a queue `q`:
+        - Since both persons have at least 1 friend (equal to `k`), the queue remains empty, and we don't need to eliminate anyone from the trip yet.
+
+    4. **Processing Day 1:**
+      - The maximum number of people that can go on the trip is determined by counting how many people have at least `k` friends:
+        - Both Person 1 and Person 2 have exactly 1 friend (which meets the requirement of `k = 1`).
+        - So, both can go on the trip, and the answer for day 1 is `2`.
+
+    ### Output Reasoning:
+    For the given test case, on day 1, both people can go on the trip since they each have 1 friend.
+
+    ### Final Expected Output:
+    ```
+    2
+    ```
+  tc_output-nl-bpt: |
+    Let's break down the problem and evaluate the input step by step:
+
+    ### Problem Recap:
+    We have 2 persons (n = 2) and 1 day (m = 1). The condition for a person to go on the trip is that they need at least 1 (k = 1) friend who is also going on the trip.
+
+    ### Input:
+    ```
+    2 1 1
+    2 1
+    ```
+
+    This means:
+    - There are 2 people.
+    - There is 1 day.
+    - Each person needs at least 1 friend to go on the trip.
+    - On the morning of the first day, persons 2 and 1 become friends.
+
+    ### Step-by-step Evaluation:
+    1. **Initial state:**
+      - There are 2 people (person 1 and person 2).
+      - No one knows each other yet.
+
+    2. **Day 1:**
+      - On the morning of day 1, persons 2 and 1 become friends.
+      - Now, we want to plan a trip for the evening. For any person to go on the trip, they need at least 1 friend who is also going on the trip.
+      - Both persons 1 and 2 are friends now, so either one of them can go, and the other will have their friend on the trip too.
+
+      Hence, on day 1, the maximum number of people that can go on the trip is 2.
+
+    ### Final Output:
+    After processing the input, the output is as follows:
+    ```
+    2
+    ```

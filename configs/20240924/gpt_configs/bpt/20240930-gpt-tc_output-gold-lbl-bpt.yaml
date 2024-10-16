@@ -33,7 +33,7 @@ dataset:
           key: tc_output
         - name: pseudocode
           source: code_contests
-          key: pc_func
+          key: pc_lbl
   - name: example
     type: dict
     kwargs:
@@ -53,7 +53,7 @@ dataset:
           key: pc_func
         - name: tc_output
           source: example
-          key: tc_output-func-pdb
+          key: tc_output-func-bpt
 
 # conda activate ArchCode
 # export PYTHONPATH="third_party/expand_langchain:$PYTHONPATH"
@@ -81,8 +81,8 @@ graph:
               temperature: 0
               top_p: 1
             parsers:
-              - type: code_block            
+              - type: code_block
             prompt:
               type: chat
               kwargs:
-                body_template_paths: ["configs/20240924/templates/tc_output-pdb"]
+                body_template_paths: ["configs/20240924/templates/tc_output-bpt"]

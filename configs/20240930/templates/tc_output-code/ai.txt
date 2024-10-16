@@ -1,0 +1,6 @@
+```json
+{
+    "explanation": {{ explanation }},
+    "output": {{ tc_output }}
+}
+```

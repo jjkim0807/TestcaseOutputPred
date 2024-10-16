@@ -1,0 +1,32 @@
+name: example
+type: dict
+kwargs:
+  primary_key: id
+  fields:
+    - name: id
+      source: example
+      key: task_id
+    - name: problem
+      source: example
+      key: complete_prompt
+    - name: solution
+      source: example
+      key: canonical_solution
+    - name: pc_lbl
+      source: example
+      key: pc_lbl
+    - name: pc_func
+      source: example
+      key: pc_func
+    - name: pc_nl
+      source: example
+      key: pc_nl
+    - name: tc_input
+      source: example
+      key: tc_input
+    - name: tc_output
+      source: example
+      key: tc_output
+    - name: explanation
+      source: example
+      key: explanation

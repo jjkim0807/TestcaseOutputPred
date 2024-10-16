@@ -1,14 +1,19 @@
 source:
-  - name: code_contests
+  - name: mhpp
     type: json
     kwargs:
       sort_key: id
-      path: results/20240924_pseudocode/splitted.json
+      path: data/MHPP_tc_parsed.json
+  - name: pred
+    type: json
+    kwargs:
+      sort_key: id
+      path: results/20241014-gpt-code/results_merged_1.json
   - name: example
     type: yaml
     kwargs:
       sort_key: id
-      path: configs/20240924/icl_examples-codecontests.yaml
+      path: configs/20241014/icl_examples-humaneval-yw.yaml
 
 dataset:
   - name: target
@@ -17,23 +22,20 @@ dataset:
       primary_key: id
       fields:
         - name: id
-          source: code_contests
+          source: mhpp
           key: id
         - name: problem
-          source: code_contests
-          key: problem
-        - name: solution
-          source: code_contests
-          key: solution
+          source: mhpp
+          key: question
         - name: tc_input
-          source: code_contests
+          source: mhpp
           key: tc_input
-        - name: tc_output-gt
-          source: code_contests
+        - name: tc_output
+          source: mhpp
           key: tc_output
-        - name: pseudocode
-          source: code_contests
-          key: pc_func
+        - name: solution
+          source: pred
+          key: code-pred
   - name: example
     type: dict
     kwargs:
@@ -45,19 +47,19 @@ dataset:
         - name: problem
           source: example
           key: question
+        - name: pseudocode
+          source: example
+          key: solution
         - name: tc_input
           source: example
           key: tc_input
-        - name: pseudocode
-          source: example
-          key: pc_func
         - name: tc_output
           source: example
-          key: tc_output-func-pdb
+          key: tc_output-lbl-bpt
 
 # conda activate ArchCode
 # export PYTHONPATH="third_party/expand_langchain:$PYTHONPATH"
-# python run.py generator --config_path=configs/20240924/gpt_configs/20240924-gpt-tc_output-gold-pdb-func.yaml --rerun=False --max_concurrency=16 - run - merge_json - exit
+# python run.py generator --config_path=configs/20240924/gpt_configs/20240924-gpt-tc_output-pred-code.yaml --rerun=False --max_concurrency=8 - run - merge_json - exit
 graph:
   entry_point: initialize
 
@@ -70,7 +72,8 @@ graph:
       chains:
         - name: tc_output-gen
           dependencies: []
-          input_keys: [problem, pseudocode, tc_input]
+          input_keys: [problem, solution, tc_input]
+          key_map: {solution: pseudocode}
           type: cot
           kwargs:
             flatten: true
@@ -85,4 +88,4 @@ graph:
             prompt:
               type: chat
               kwargs:
-                body_template_paths: ["configs/20240924/templates/tc_output-pdb"]
+                body_template_paths: ["configs/20240924/templates/tc_output-bpt"]

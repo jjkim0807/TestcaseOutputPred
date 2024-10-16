@@ -1,0 +1,87 @@
+- task_id: BigCodeBench-icl/0
+  complete_prompt: |
+    import re
+    from collections import Counter
+
+    def task_func(string):
+        """
+        This function takes a string as input and returns a dictionary with the count of each word in the string.
+        Words are case-insensitive and punctuation should be ignored.
+
+        Args:
+        - string (str): A string of words separated by spaces.
+
+        Returns:
+        dict: A dictionary where keys are words and values are the count of those words in the input string.
+
+        Example:
+        >>> result = task_func('Hello, hello world!')
+        >>> result
+        {'hello': 2, 'world': 1}
+        """
+  canonical_solution: |
+        cleaned_string = re.sub(r'[^\w\s]', '', string.lower())
+        words = cleaned_string.split()
+        word_count = Counter(words)
+        result = dict(word_count)
+
+        return result
+  pc_func: |
+    cleaned_string = clean_str(string) # Remove punctuation and convert to lowercase
+    words = split(cleaned_string) # Split the string into words
+    word_count = count_occ(words) # Count the occurrences of each word
+    result = convert_to_dict(word_count) # Convert the Counter object to a dictionary
+
+    return result # Return the dictionary
+  pc_lbl: |
+    cleaned_string = re.sub(r'[^\w\s]', '', string.lower()) # Remove punctuation and convert to lowercase
+    words = cleaned_string.split() # Split the string into words
+    word_count = Counter(words) # Count the occurrences of each word
+    result = dict(word_count) # Convert the Counter object to a dictionary
+
+    return result # Return the dictionary
+  pc_nl: |
+    # Remove punctuation and convert to lowercase and save it to `cleaned_string`
+    # Split the string into words and save it to `words`
+    # Count the occurrences of each word and save it to `word_count` in dictionary format
+
+    # Return the dictionary
+  entry_point: task_func
+  tc_input:
+    - The quick brown fox jumps over the lazy dog.
+    - ''
+    - Hello hello HeLLo
+    - Hello, world! Hello again.
+    - 123 123 456
+  tc_output:
+    - {'the': 2, 'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1}
+    - {}
+    - {'hello': 3}
+    - {'hello': 2, 'world': 1, 'again': 1}
+    - {'123': 2, '456': 1}
+  explanation: # the reasoning steps to get the output.
+    - |
+      the input is 'The quick brown fox jumps over the lazy dog.'
+      the cleaned string is 'the quick brown fox jumps over the lazy dog'
+      the words are ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+      the word count is {'the': 2, 'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1}
+    - |
+      the input is ''
+      the cleaned string is ''
+      the words are []
+      the word count is {}
+    - | 
+      the input is 'Hello hello HeLLo'
+      the cleaned string is 'hello hello hello'
+      the words are ['hello', 'hello', 'hello']
+      the word count is {'hello': 3}
+    - |
+      the input is 'Hello, world! Hello again.'
+      the cleaned string is 'hello world hello again'
+      the words are ['hello', 'world', 'hello', 'again']
+      the word count is {'hello': 2, 'world': 1, 'again': 1}
+    - |
+      the input is '123 123 456'
+      the cleaned string is '123 123 456'
+      the words are ['123', '123', '456']
+      the word count is {'123': 2, '456': 1}

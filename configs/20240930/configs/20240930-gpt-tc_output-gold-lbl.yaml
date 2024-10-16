@@ -1,0 +1,56 @@
+source:
+  bigcodebench: !inc configs/20240930/configs/inc/source-bigcodebench.yaml
+  example: !inc configs/20240930/configs/inc/source-example.yaml
+
+dataset:
+  - !inc configs/20240930/configs/inc/dataset-target.yaml
+  - name: example
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: example
+          key: id
+        - name: problem
+          source: example
+          key: complete_prompt
+        - name: tc_input
+          source: example
+          key: tc_input
+        - name: pseudocode
+          source: example
+          key: pc_lbl
+        - name: tc_output
+          source: example
+          key: tc_output
+        - name: explanation
+          source: example
+          key: explanation
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: tc_output-gen
+          dependencies: []
+          input_keys: [problem, pseudocode, tc_input]
+          type: cot
+          kwargs:
+            flatten: true
+            llm:
+              max_tokens: 8192
+              model: gpt-4o-mini
+              platform: openai
+              temperature: 0
+              top_p: 1
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20240930/templates/tc_output-vanilla"]

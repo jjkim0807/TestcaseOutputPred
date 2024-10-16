@@ -4,20 +4,17 @@
 {{ problem }}
 ```
 
-## Pseudocode
-{{ pseudocode }}
-
 ## Testcase Input
 ```plaintext
 {{ tc_input }}
 ```
 
 # Instruction
-I provided you a coding problem, its pseudocode and a testcase input.
-You need to predict the testcase output with the provided pseudocode.
+I provided you a coding problem and a testcase input.
+You need to predict the testcase output based on the input.
 Here are some conditions.
 - The output should be written in a code block using three backticks (```).
-- In 'explanation' key, you need to provide the reason why you think the output is correct.
+- In 'explanation' key, you need to provide the reasoning steps to get the output.
 - In 'output' key, you need to provide the output of the testcase input.
 
 # Output Format

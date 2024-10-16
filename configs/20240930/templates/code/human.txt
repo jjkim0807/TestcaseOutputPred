@@ -1,0 +1,17 @@
+# Inputs
+## Problem
+```python
+{{ problem }}
+```
+
+# Instruction
+I'm going to provide you a coding problem.
+You need to write a solution code.
+Here are some conditions.
+- The output should be written in a separate code block using three backticks (```) at the beginning and end.
+- The output should be indented by 4 spaces, so that can be concatenated with the function definition.
+
+# Output Format{% raw %}
+```python
+{{ code }}
+```{% endraw %}

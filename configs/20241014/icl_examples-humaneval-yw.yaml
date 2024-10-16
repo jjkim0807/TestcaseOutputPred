@@ -1,0 +1,131 @@
+- id: countZeroSumTuples
+  question: |
+    from collections import defaultdict
+
+    def countZeroSumTuples(nums1, nums2, nums3, nums4):
+        """
+        Given four lists of integers, nums1, nums2, nums3, and nums4, return the number of tuples (i, j, k, l) such that:
+        - 0 <= i, j, k, l < len(nums1), len(nums2), len(nums3), len(nums4) respectively
+        - nums1[i] + nums2[j] + nums3[k] + nums4[l] == 0        
+        """
+  solution: | 
+    from collections import defaultdict
+
+    def countZeroSumTuples(nums1, nums2, nums3, nums4):
+        sum_12, sum_34 = {}
+        for i in range(len(nums1)):
+            for j in range(len(nums2)):
+                sum_ij = nums1[i] + nums2[j]
+                sum_12[sum_ij] += 1
+
+        for k in range(len(nums3)):
+            for l in range(len(nums4)):
+                sum_kl = nums3[k] + nums4[l]
+                sum_34[sum_kl] += 1
+
+        count = 0
+        for s12, c12 in sum_12.items():
+            for s34, c34 in sum_34.items():
+                if s12 + s34 == 0:
+                    count += c12 * c34
+
+        return count
+  pc_lbl: |
+    function countZeroSumTuples(nums1, nums2, nums3, nums4):
+        # Create a dictionary that maps the sum of pairs from nums1 and nums2 to counts
+        for x in nums1:
+            for y in nums2:
+                sum_xy <- x + y
+                sum_12[sum_xy] <- sum_12[sum_xy] + 1
+
+        # Repeat the same for nums3 and nums4
+        for z in nums3:
+            for w in nums4:
+                sum_zw <- z + w
+                sum_34[sum_zw] <- sum_34[sum_zw] + 1
+
+        # Count the number of two sums that sum up to 0
+        count <- 0
+        for s12, c12 in sum_12.items():
+            for s34, c34 in sum_34.items():
+                if s12 + s34 == 0:
+                    count <- count + c12 * c34
+
+        # Return the total count of valid tuples
+        return count
+  pc_func: |
+    function countZeroSumTuples(nums1, nums2, nums3, nums4):
+        sum_12 = count_possible_sums_of_pairs(nums1, nums2) # Create a dictionary sum_12 that maps the sum of pairs from nums1 and nums2 to counts they appear
+        sum_34 = count_possible_sums_of_pairs(nums3, nums4) # Repeat the same for nums3 and nums4
+        count = count_pairs_sum_up_to_zero(sum_12, sum_34) # Count the number of two sums that sum up to 0
+        return count # Return the total count of valid tuples
+  pc_nl: |
+    function countZeroSumTuples(nums1, nums2, nums3, nums4):
+        1. Create a dictionary sum_12 that maps the sum of pairs from nums1 and nums2 to counts they appear    
+        2. Repeat the same for nums3 and nums4
+        3. Count the number of two sums that sum up to 0
+        4. Return the total count of valid tuples
+  tc_input: |
+    countZeroSumTuples([1, 2], [-2, -1], [-1, 2], [0, 2])
+  tc_output-vanilla: |
+    {
+        "explanation": "The algorithm first computes all possible sums of pairs from `nums1` and `nums2`, then computes the sums of pairs from `nums3` and `nums4`. After that, it checks for pairs of sums that add up to zero and multiplies their counts. In this case, the pairs from `nums1` and `nums2` are (1 + (-2) = -1, 1 + (-1) = 0, 2 + (-2) = 0, 2 + (-1) = 1). The pairs from `nums3` and `nums4` are (-1 + 0 = -1, -1 + 2 = 1, 2 + 0 = 2, 2 + 2 = 4). The only pairs that sum to 0 are (0 from nums1/nums2 and 0 from nums3/nums4). This happens twice, so the total count of valid tuples is 2.",
+        "output": 2
+    }  
+  tc_output-lbl-bpt: |
+    Let's walk through the code step by step with the provided input to predict the output.
+
+    ### Inputs:
+    - nums1 = [1, 2]
+    - nums2 = [-2, -1]
+    - nums3 = [-1, 2]
+    - nums4 = [0, 2]
+
+    ### Step 1: Compute sum_12 for nums1 and nums2.
+    We will calculate the sum of every pair from `nums1` and `nums2`, and count the occurrences in a dictionary `sum_12`.
+
+    - For `nums1[0] = 1`:
+    - `1 + (-2) = -1` → sum_12[-1] = 1
+    - `1 + (-1) = 0` → sum_12[0] = 1
+
+    - For `nums1[1] = 2`:
+    - `2 + (-2) = 0` → sum_12[0] = 2 (since we already had 0 once)
+    - `2 + (-1) = 1` → sum_12[1] = 1
+
+    So, after processing `nums1` and `nums2`, the dictionary `sum_12` looks like:
+    ```
+    sum_12 = {-1: 1, 0: 2, 1: 1}
+    ```
+
+    ### Step 2: Compute sum_34 for nums3 and nums4.
+    Next, we compute the sum of every pair from `nums3` and `nums4`, and store the counts in the dictionary `sum_34`.
+
+    - For `nums3[0] = -1`:
+    - `-1 + 0 = -1` → sum_34[-1] = 1
+    - `-1 + 2 = 1` → sum_34[1] = 1
+
+    - For `nums3[1] = 2`:
+    - `2 + 0 = 2` → sum_34[2] = 1
+    - `2 + 2 = 4` → sum_34[4] = 1
+
+    So, after processing `nums3` and `nums4`, the dictionary `sum_34` looks like:
+    ```
+    sum_34 = {-1: 1, 1: 1, 2: 1, 4: 1}
+    ```
+
+    ### Step 3: Count valid tuples.
+    Now we need to count how many pairs from `sum_12` and `sum_34` sum to zero.
+
+    We loop over each entry in `sum_12` and check if its negation exists in `sum_34`. If it does, we multiply the counts from both dictionaries.
+
+    - For `s12 = -1`, `c12 = 1`: We check if `1` exists in `sum_34`. It does, with `c34 = 1`. So, we add `1 * 1 = 1` to the count.
+    - For `s12 = 0`, `c12 = 2`: We check if `0` exists in `sum_34`. It doesn't, so no valid tuples for this case.
+    - For `s12 = 1`, `c12 = 1`: We check if `-1` exists in `sum_34`. It does, with `c34 = 1`. So, we add `1 * 1 = 1` to the count.
+
+    ### Final Count:
+    The total count of valid tuples is `1 + 1 = 2`.
+
+    ### Final Output:
+    ```
+    2
+    ```

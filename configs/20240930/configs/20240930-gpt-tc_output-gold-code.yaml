@@ -1,0 +1,55 @@
+source:
+  bigcodebench: !inc configs/20240930/configs/inc/source-bigcodebench.yaml
+  example: !inc configs/20240930/configs/inc/source-example.yaml
+
+dataset:
+  - !inc configs/20240930/configs/inc/dataset-target.yaml
+  - name: example
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: example
+          key: id
+        - name: problem
+          source: example
+          key: complete_prompt
+        - name: code
+          source: example
+          key: solution
+        - name: tc_input
+          source: example
+          key: tc_input
+        - name: tc_output
+          source: example
+          key: tc_output
+        - name: explanation
+          source: example
+          key: explanation
+
+# conda activate ArchCode
+# export PYTHONPATH="third_party/expand_langchain:$PYTHONPATH"
+# python run.py generator --config_path=configs/20240924/gpt_configs/20240924-gpt-tc_output-gold-code.yaml --rerun=False --max_concurrency=8 - run - merge_json - exit
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: tc_output-gen
+          dependencies: []
+          input_keys: [problem, solution, tc_input]
+          key_map: {solution: code}
+          type: cot
+          kwargs:
+            flatten: true
+            llm: !inc configs/llm/gpt_4o_mini-greedy.yaml
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20240930/templates/tc_output-code"]

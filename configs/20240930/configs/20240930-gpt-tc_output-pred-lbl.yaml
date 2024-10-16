@@ -1,14 +1,10 @@
 source:
-  - name: code_contests
-    type: json
-    kwargs:
-      sort_key: id
-      path: results/20240924_pseudocode/splitted.json
+  - !inc configs/source/bigcodebench.yaml
   - name: example
     type: yaml
     kwargs:
-      sort_key: id
-      path: configs/20240924/icl_examples-codecontests.yaml
+      sort_key: task_id
+      path: configs/20240930/icl_examples-bigcodebench.yaml
 
 dataset:
   - name: target
@@ -22,9 +18,6 @@ dataset:
         - name: problem
           source: code_contests
           key: problem
-        - name: solution
-          source: code_contests
-          key: solution
         - name: tc_input
           source: code_contests
           key: tc_input
@@ -33,7 +26,7 @@ dataset:
           key: tc_output
         - name: pseudocode
           source: code_contests
-          key: pc_func
+          key: pc_pred-lbl
   - name: example
     type: dict
     kwargs:
@@ -50,14 +43,14 @@ dataset:
           key: tc_input
         - name: pseudocode
           source: example
-          key: pc_func
+          key: pc_lbl
         - name: tc_output
           source: example
-          key: tc_output-func-pdb
+          key: tc_output-vanilla
 
 # conda activate ArchCode
 # export PYTHONPATH="third_party/expand_langchain:$PYTHONPATH"
-# python run.py generator --config_path=configs/20240924/gpt_configs/20240924-gpt-tc_output-gold-pdb-func.yaml --rerun=False --max_concurrency=16 - run - merge_json - exit
+# python run.py generator --config_path=configs/20240924/gpt_configs/20240924-gpt-tc_output-pred-lbl.yaml --rerun=False --max_concurrency=8 - run - merge_json - exit
 graph:
   entry_point: initialize
 
@@ -68,7 +61,7 @@ graph:
   nodes:
     - name: initialize
       chains:
-        - name: tc_output-gen
+        - name: tc_output-pred-lbl
           dependencies: []
           input_keys: [problem, pseudocode, tc_input]
           type: cot
@@ -80,9 +73,7 @@ graph:
               platform: openai
               temperature: 0
               top_p: 1
-            parsers:
-              - type: code_block            
             prompt:
               type: chat
               kwargs:
-                body_template_paths: ["configs/20240924/templates/tc_output-pdb"]
+                body_template_paths: ["configs/20240924/templates/tc_output-vanilla"]

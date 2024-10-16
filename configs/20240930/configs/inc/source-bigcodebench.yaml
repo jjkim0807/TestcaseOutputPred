@@ -1,0 +1,6 @@
+name: bigcodebench
+type: huggingface
+kwargs:
+  path: bigcode/bigcodebench
+  sort_key: task_id
+  split: v0.1.2

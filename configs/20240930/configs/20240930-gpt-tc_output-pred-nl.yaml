@@ -1,0 +1,42 @@
+source:
+  - !inc configs/20240930/configs/inc/source-bigcodebench.yaml
+  - !inc configs/20240930/configs/inc/source-example.yaml
+
+dataset:
+  - !inc configs/20240930/configs/inc/dataset-target.yaml
+  - !inc configs/20240930/configs/inc/dataset-example.yaml
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: pc_pred-nl
+          dependencies: []
+          input_keys: [problem]
+          type: cot
+          cache_path: cache/20240930/pc_pred-nl
+          kwargs:
+            flatten: true
+            llm: !inc configs/llm/gpt_4o_mini-greedy.yaml
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20240930/templates/pc_pred-nl"]
+        - name: tc_output-pred-nl
+          dependencies: [pc_pred-nl]
+          input_keys: [problem, pc_pred-nl, tc_input]
+          key_map: {pc_pred-nl: pseudocode}
+          type: cot
+          kwargs:
+            flatten: true
+            llm: !inc configs/llm/gpt_4o_mini-greedy.yaml
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20240930/templates/tc_output-vanilla"]

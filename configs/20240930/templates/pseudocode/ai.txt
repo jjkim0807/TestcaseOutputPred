@@ -1,0 +1,12 @@
+1. line by line pseudocode
+```python
+{{ pc_lbl }}
+```
+2. middle level abstraction pseudocode
+```python
+{{ pc_func }}
+```
+3. Pure natural language pseudocode
+```plaintext
+{{ pc_nl }}
+```

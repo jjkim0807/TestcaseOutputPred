@@ -1,0 +1,99 @@
+source:
+  - name: code_contests
+    type: json
+    kwargs:
+      sort_key: id
+      path: results/20241104-pc_lbl-gt/results_merged_1.json
+  - name: example
+    type: yaml
+    kwargs:
+      sort_key: id
+      path: configs/20241104/icl_examples/codecontests.yaml
+
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: code_contests
+          key: id
+        - name: problem
+          source: code_contests
+          key: problem
+        - name: solution
+          source: code_contests
+          key: solution
+        - name: tc_input
+          source: code_contests
+          key: tc_input
+        - name: tc_output-gt
+          source: code_contests
+          key: tc_output-gt
+        - name: pseudocode
+          source: code_contests
+          key: pc_lbl-gt
+  - name: example
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: example
+          key: id
+        - name: problem
+          source: example
+          key: question
+        - name: code
+          source: example
+          key: solution
+        - name: tc_input
+          source: example
+          key: tc_input
+        - name: tc_output
+          source: example
+          key: tc_output-vanilla
+        - name: pseudocode
+          source: example
+          key: pc_lbl
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: _tc_output-pred
+          dependencies: []
+          input_keys: [problem, pseudocode, tc_input]
+          type: cot
+          kwargs:
+            flatten: true
+            llm:
+              max_tokens: 8192
+              model: gpt-4o-mini
+              platform: openai
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241104/templates/tc_output-vanilla"]
+        - name: tc_output-pred
+          dependencies: [_tc_output-pred]
+          input_keys: [_tc_output-pred]
+          type: custom_lambda
+          kwargs:
+            src: ["_tc_output-pred"]
+            func: |
+              def func(s):
+                  import json
+
+                  return str(json.loads(s)["output"])

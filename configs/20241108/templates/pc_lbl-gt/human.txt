@@ -1,0 +1,23 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Solution
+```python
+{{ solution }}
+```
+
+# Instruction
+I provided you a coding problem and its solution code.
+You need to write a pseudocode based on the solution code.
+Here are some conditions.
+- The output should be written in a separate code block using three backticks (```) at the beginning and end.
+- The pseudocode should be line by line pseudocode.
+    - It should be written in a way that each line of the pseudocode corresponds to a line of the solution code.
+
+# Output Format{% raw %}
+```plaintext
+{{ pseudocode }}
+```{% endraw %}

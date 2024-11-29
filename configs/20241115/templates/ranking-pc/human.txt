@@ -1,0 +1,28 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Pseudocode 1
+```plaintext
+{{ pseudocode_1 }}
+```
+
+## Pseudocode 2
+```plaintext
+{{ pseudocode_2 }}
+```
+
+# Instruction
+I provided you a coding problem and its two pseudocode solutions.
+You need to choose the correct pseudocode solution.
+The final output should be "1" or "2".
+Do not repeat the pseudocode in your answer.
+
+# Output Format{% raw %}
+{{ your reasoning }}
+
+```plaintext
+{{ your choise 1 or 2 }}
+```{% endraw %}

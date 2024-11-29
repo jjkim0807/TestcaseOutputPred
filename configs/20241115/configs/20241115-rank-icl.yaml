@@ -1,0 +1,93 @@
+source:
+  - name: code_contests
+    type: json
+    kwargs:
+      sort_key: id
+      path: results/20241115-pc/results_merged_1.json
+  - name: example
+    type: yaml
+    kwargs:
+      sort_key: id
+      path: configs/20241115/icl_examples/codecontests.yaml
+
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: code_contests
+          key: id
+        - name: problem
+          source: code_contests
+          key: problem
+        - name: tc_input
+          source: code_contests
+          key: tc_input
+        - name: tc_output-gt
+          source: code_contests
+          key: tc_output-gt
+        - name: pc_lbl-pred
+          source: code_contests
+          key: pc_lbl-pred
+  - name: example
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: example
+          key: id
+        - name: problem
+          source: example
+          key: question
+        - name: tc_input
+          source: example
+          key: tc_input
+        - name: tc_output
+          source: example
+          key: tc_output-lbl-bp
+        - name: pseudocode
+          source: example
+          key: pc_lbl
+        - name: pseudocode_1
+          source: example
+          key: pc_lbl
+        - name: pseudocode_2
+          source: example
+          key: pc_lbl_2
+        - name: ranking_pc
+          source: example
+          key: ranking_pc
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: ranking_pc
+          dependencies: [pc_lbl-pred]
+          input_keys: [problem, pc_lbl-pred]
+          key_map:
+            pc_lbl-pred: pseudocode
+          type: pairwise_ranking
+          kwargs:
+            target_key: pseudocode
+            llm:
+              max_tokens: 2048
+              model: gpt-4o-mini
+              platform: openai
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241115/templates/ranking-pc"]

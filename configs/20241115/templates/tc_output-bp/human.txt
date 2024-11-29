@@ -1,0 +1,26 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Pseudocode
+{{ pseudocode }}
+
+## Testcase Input
+```plaintext
+{{ tc_input }}
+```
+
+# Instruction
+I provided you a coding problem, its pseudocode and a testcase input.
+You need to predict the testcase output.
+Here are some conditions.
+- Make sure to think step by step; just like human programmers use breakpoints to track intermediate values, place imaginary breakpoints at proper points and decide which value to query.
+- Your final expected output should be always placed at the end of your response, enclosed by a pair of ```.
+
+# Output Format{% raw %}
+{{ reasoning }}
+```
+{{ expected_output }}
+```{% endraw %}

@@ -1,0 +1,183 @@
+source:
+  - name: livecodebench
+    type: json
+    kwargs:
+      sort_key: id
+      path: data/livecodebench_test.json
+  - name: example
+    type: yaml
+    kwargs:
+      sort_key: id
+      path: configs/20241203/icl_examples/livecodebench.yaml
+
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: livecodebench
+          key: id
+        - name: problem
+          source: livecodebench
+          key: question_content
+        - name: starter_code
+          source: livecodebench
+          key: starter_code
+        - name: testcase
+          source: livecodebench
+          key: test
+  - name: example
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: example
+          key: id
+        - name: problem
+          source: example
+          key: problem
+        - name: starter_code
+          source: livecodebench
+          key: starter_code
+        - name: tc_input
+          source: example
+          key: tc_input
+        - name: tc_output
+          source: example
+          key: tc_output
+        - name: pseudocode
+          source: example
+          key: pseudocode
+        - name: pseudocode_1
+          source: example
+          key: pseudocode
+        - name: pseudocode_2
+          source: example
+          key: pseudocode_2
+        - name: ranking_pc
+          source: example
+          key: ranking_pc
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: tc_input
+          dependencies: []
+          input_keys: [testcase]
+          output_keys: [tc_input]
+          type: custom_lambda
+          kwargs:
+            src: ["testcase"]
+            distribute: False
+            func: |
+              def func(testcase):
+                  result = []
+                  for t in testcase:
+                      result.append(t[0]["input"])
+                  return result
+
+        - name: tc_output-gt
+          dependencies: []
+          input_keys: [testcase]
+          output_keys: [tc_output-gt]
+          type: custom_lambda
+          kwargs:
+            src: ["testcase"]
+            distribute: False
+            func: |
+              def func(testcase):
+                  result = []
+                  for t in testcase:
+                      result.append(t[0]["output"])
+                  return result
+
+        - name: pseudocode
+          type: cot
+          dependencies: []
+          input_keys: [problem, starter_code]
+          output_keys: [pseudocode]
+          kwargs:
+            n: 5
+            flatten: true
+            llm:
+              max_tokens: 4096
+              model: gpt-4o-mini
+              platform: openai
+              temperature: 0.8
+              top_p: 0.95
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241203/templates/pseudocode"]
+
+        - name: ranking_pc
+          type: pairwise_ranking
+          dependencies: [pseudocode]
+          input_keys: [problem, starter_code, pseudocode]
+          output_keys: [ranking_pc]
+          kwargs:
+            target_key: pseudocode
+            llm:
+              max_tokens: 2048
+              model: gpt-4o-mini
+              platform: openai
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241203/templates/ranking_pc"]
+
+        - name: ranking_pc-parsed
+          type: pairwise_ranking_parser
+          dependencies: [ranking_pc]
+          input_keys: [ranking_pc]
+          output_keys: [ranking_pc-parsed]
+          kwargs:
+            disable_icl: True
+            llm:
+              max_tokens: 128
+              model: gpt-4o-mini
+              platform: openai
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+              - type: load_json
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241203/templates/choice_parser"]
+
+        - name: tc_output-pred
+          dependencies: [pseudocode, tc_input]
+          input_keys: [problem, starter_code, pseudocode, tc_input]
+          output_keys: [tc_output-pred]
+          type: cot
+          kwargs:
+            llm:
+              max_tokens: 8192
+              model: gpt-4o-mini
+              platform: openai
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241203/templates/tc_output"]

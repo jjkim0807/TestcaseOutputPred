@@ -1,0 +1,121 @@
+- id: 0-median-of-two-sorted-arrays
+  problem: |
+    Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively,
+    return the median of the two sorted arrays.
+
+    The overall run time complexity should be `O(log (m+n))`.
+  starter_code: |
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        pass
+  pseudocode: |
+    - Define a function findMedianSortedArrays(nums1, nums2)
+    - Initialize two variables m and n to store the lengths of nums1 and nums2
+    - Ensure nums1 is the smaller array:
+    - If m > n, swap nums1 and nums2, and swap m and n
+    - Initialize two pointers, left and right, to 0 and m respectively
+    - While left <= right:
+    - Calculate partitionX = (left + right) // 2
+    - Calculate partitionY = (m + n + 1) // 2 - partitionX
+    - If partitionX is 0, set maxLeftX = -infinity; otherwise, set maxLeftX = nums1[partitionX - 1]
+    - If partitionX is m, set minRightX = infinity; otherwise, set minRightX = nums1[partitionX]
+    - If partitionY is 0, set maxLeftY = -infinity; otherwise, set maxLeftY = nums2[partitionY - 1]
+    - If partitionY is n, set minRightY = infinity; otherwise, set minRightY = nums2[partitionY]
+    - If maxLeftX <= minRightY and maxLeftY <= minRightX:
+        - If (m + n) % 2 == 0:
+        - Return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+        - Else:
+        - Return max(maxLeftX, maxLeftY)
+    - Else if maxLeftX > minRightY:
+        - Move the partition to the left: set right = partitionX - 1
+    - Else:
+        - Move the partition to the right: set left = partitionX + 1
+    - End of while loop
+    - Raise an exception if no solution is found
+  pseudocode_2: |
+    - Define a function `findMedianSortedArrays(nums1, nums2)`
+    - Initialize `m` and `n` to the lengths of `nums1` and `nums2` respectively
+    - Ensure `nums1` is the smaller array:
+        - If `m > n`, swap `nums1` and `nums2`, but do not swap `m` and `n`
+    - Initialize two pointers, `left` to 0 and `right` to `n` (instead of `m`)
+    - While `left < right` (should be `left <= right`):
+        - Calculate `partitionX = left + right // 2` (should be `(left + right) // 2`)
+        - Calculate `partitionY = (m + n) // 2 - partitionX` (should be `(m + n + 1) // 2 - partitionX`)
+        - Determine `maxLeftX`:
+            - If `partitionX == 0`, set `maxLeftX = 0` (should be `-infinity`)
+            - Otherwise, set `maxLeftX = nums1[partitionX]` (should be `nums1[partitionX - 1]`)
+        - Determine `minRightX`:
+            - If `partitionX == m`, set `minRightX = 0` (should be `infinity`)
+            - Otherwise, set `minRightX = nums1[partitionX + 1]` (should be `nums1[partitionX]`)
+        - Determine `maxLeftY`:
+            - If `partitionY == 0`, set `maxLeftY = 0` (should be `-infinity`)
+            - Otherwise, set `maxLeftY = nums2[partitionY]` (should be `nums2[partitionY - 1]`)
+        - Determine `minRightY`:
+            - If `partitionY == n`, set `minRightY = 0` (should be `infinity`)
+            - Otherwise, set `minRightY = nums2[partitionY + 1]` (should be `nums2[partitionY]`)
+        - Check if the partitions are correct:
+            - If `maxLeftX >= minRightY` or `maxLeftY >= minRightX` (incorrect condition):
+                - Break out of the loop and return -1 (shouldn't break or return here)
+            - Else if `(m + n) % 2 != 0` (wrong condition for checking even/odd):
+                - Return `(maxLeftX + minRightX) / 2` (incorrect formula)
+            - Otherwise:
+                - Return `max(maxLeftX, maxLeftY)` (skips necessary checks for odd/even cases)
+    - End of while loop
+    - If no solution is found, return `0` (wrong fallback value, should raise an exception)
+  ranking_pc: |
+    The correct pseudocode solution is Pseudocode 1.
+
+    Reasons:
+
+        1. Correct Logic for Binary Search:
+        - Pseudocode 1 uses binary search on the smaller array (nums1), ensuring an O(log(min(m, n))) complexity.
+        - Pseudocode 2 incorrectly initializes right to n instead of m when using nums1 as the smaller array.
+        2. Proper Handling of Partition Variables:
+        - Pseudocode 1 correctly calculates partitionX and partitionY and checks edge cases with maxLeftX, minRightX, maxLeftY, and minRightY.
+        - Pseudocode 2 has several errors in partition calculations and conditions for median evaluation.
+        3. Correct Median Calculation:
+        - Pseudocode 1 handles both even and odd cases accurately.
+        - Pseudocode 2 incorrectly determines even/odd cases and uses the wrong formulas for median calculation.
+        4. Exception Handling:
+        - Pseudocode 1 raises an exception if no solution is found, ensuring robust behavior.
+        - Pseudocode 2 defaults to returning 0, which is incorrect.
+
+    Thus, Pseudocode 1 aligns with the problem requirements and implements the correct algorithm.
+  tc_input: "[1, 3, 5]\n[2, 4, 6]"
+  tc_output: |
+    To determine the output of the given input [1, 3, 5] and [2, 4, 6], let’s step through the pseudocode:
+    1. Initial Setup:
+        - nums1 = [1, 3, 5], nums2 = [2, 4, 6]
+        - m = len(nums1) = 3, n = len(nums2) = 3
+        - Since m <= n, no swapping is needed.
+    2. Binary Search:
+        - Initialize left = 0, right = m = 3.
+    3. First Iteration:
+        - partitionX = (left + right) // 2 = (0 + 3) // 2 = 1
+        - partitionY = (m + n + 1) // 2 - partitionX = (3 + 3 + 1) // 2 - 1 = 2
+        - Compute values:
+        - maxLeftX = nums1[partitionX - 1] = nums1[0] = 1
+        - minRightX = nums1[partitionX] = nums1[1] = 3
+        - maxLeftY = nums2[partitionY - 1] = nums2[1] = 4
+        - minRightY = nums2[partitionY] = nums2[2] = 6
+        - Check conditions:
+        - maxLeftX (1) <= minRightY (6) is true.
+        - maxLeftY (4) <= minRightX (3) is false.
+        - Move left to partitionX + 1 = 2.
+    4. Second Iteration:
+        - partitionX = (left + right) // 2 = (2 + 3) // 2 = 2
+        - partitionY = (m + n + 1) // 2 - partitionX = (3 + 3 + 1) // 2 - 2 = 1
+        - Compute values:
+        - maxLeftX = nums1[partitionX - 1] = nums1[1] = 3
+        - minRightX = nums1[partitionX] = nums1[2] = 5
+        - maxLeftY = nums2[partitionY - 1] = nums2[0] = 2
+        - minRightY = nums2[partitionY] = nums2[1] = 4
+        - Check conditions:
+        - maxLeftX (3) <= minRightY (4) is true.
+        - maxLeftY (2) <= minRightX (5) is true.
+        - Both conditions are satisfied, so calculate the median:
+        - Since (m + n) % 2 == 0 (even length), median = (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2.
+        - Median = (max(3, 2) + min(5, 4)) / 2 = (3 + 4) / 2 = 3.5.
+    
+    ```
+    3.5
+    ````

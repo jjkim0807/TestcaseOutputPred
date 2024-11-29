@@ -1,0 +1,651 @@
+- id: 1037_E. Trips
+  question: |
+    There are n persons who initially don't know each other. On each morning, two of them, who were not friends before, become friends.
+
+    We want to plan a trip for every evening of m days. On each trip, you have to select a group of people that will go on the trip. For every person, one of the following should hold: 
+
+    * Either this person does not go on the trip, 
+    * Or at least k of his friends also go on the trip. 
+
+
+
+    Note that the friendship is not transitive. That is, if a and b are friends and b and c are friends, it does not necessarily imply that a and c are friends.
+
+    For each day, find the maximum number of people that can go on the trip on that day.
+
+    Input
+
+    The first line contains three integers n, m, and k (2 ≤ n ≤ 2 ⋅ 10^5, 1 ≤ m ≤ 2 ⋅ 10^5, 1 ≤ k < n) — the number of people, the number of days and the number of friends each person on the trip should have in the group.
+
+    The i-th (1 ≤ i ≤ m) of the next m lines contains two integers x and y (1≤ x, y≤ n, x≠ y), meaning that persons x and y become friends on the morning of day i. It is guaranteed that x and y were not friends before.
+
+    Output
+
+    Print exactly m lines, where the i-th of them (1≤ i≤ m) contains the maximum number of people that can go on the trip on the evening of the day i.
+
+    Examples
+
+    Input
+
+    4 4 2
+    2 3
+    1 2
+    1 3
+    1 4
+
+
+    Output
+
+    0
+    0
+    3
+    3
+
+
+    Input
+
+    5 8 2
+    2 1
+    4 2
+    5 4
+    5 2
+    4 3
+    5 1
+    4 1
+    3 2
+
+
+    Output
+
+    0
+    0
+    0
+    3
+    3
+    4
+    4
+    5
+
+
+    Input
+
+    5 7 2
+    1 5
+    3 2
+    2 5
+    3 4
+    1 2
+    5 3
+    1 3
+
+
+    Output
+
+    0
+    0
+    0
+    0
+    3
+    4
+    4
+
+    Note
+
+    In the first example, 
+
+    * 1,2,3 can go on day 3 and 4. 
+
+
+
+    In the second example, 
+
+    * 2,4,5 can go on day 4 and 5. 
+    * 1,2,4,5 can go on day 6 and 7. 
+    * 1,2,3,4,5 can go on day 8. 
+
+
+
+    In the third example, 
+
+    * 1,2,5 can go on day 5. 
+    * 1,2,3,5 can go on day 6 and 7.
+  solution: |
+    from collections import deque
+
+    def solve(adj, m, k, uv):
+        n = len(adj)
+        nn = [len(a) for a in adj]
+        q = deque()
+        for i in range(n):
+            if nn[i] < k:
+                q.append(i)
+        while q:
+            v = q.popleft()
+            for u in adj[v]:
+                nn[u] -= 1
+                if nn[u] == k-1:
+                    q.append(u)
+        res = [0]*m
+        nk = len([1 for i in nn if i >= k])
+        res[-1] = nk
+        for i in range(m-1, 0, -1):
+            u1, v1 = uv[i]
+
+            if nn[u1] < k or nn[v1] < k:
+                res[i - 1] = nk
+                continue
+            if nn[u1] == k:
+                q.append(u1)
+                nn[u1] -= 1
+            if not q and nn[v1] == k:
+                q.append(v1)
+                nn[v1] -= 1
+
+            if not q:
+                nn[u1] -= 1
+                nn[v1] -= 1
+                adj[u1].remove(v1)
+                adj[v1].remove(u1)
+
+            while q:
+                v = q.popleft()
+                nk -= 1
+                for u in adj[v]:
+                    nn[u] -= 1
+                    if nn[u] == k - 1:
+                        q.append(u)
+            res[i - 1] = nk
+        return res
+
+    n, m, k = map(int, input().split())
+    a = [set() for i in range(n)]
+    uv = []
+    for i in range(m):
+        u, v = map(int, input().split())
+        a[u - 1].add(v - 1)
+        a[v - 1].add(u - 1)
+        uv.append((u-1, v-1))
+
+    res = solve(a, m, k, uv)
+    print(str(res)[1:-1].replace(' ', '').replace(',', '\n'))
+  pc_code_comment: |
+    def solve(adj, m, k, uv):
+        n = len(adj) # get number of nodes
+        nn = [len(a) for a in adj] # calculate degrees for each node
+        q = deque() # initialize queue
+        for i in range(n): # loop over all nodes
+            if nn[i] < k: # check if degree is less than k
+                q.append(i) # add node to queue
+        while q: # process queue
+            v = q.popleft() # get the first node in the queue
+            for u in adj[v]: # loop over neighbors of the node
+                nn[u] -= 1 # decrease degree of neighbor
+                if nn[u] == k-1: # check if degree is k-1
+                    q.append(u) # add neighbor to queue
+        res = [0]*m # initialize result list
+        nk = len([1 for i in nn if i >= k]) # count nodes with degree >= k
+        res[-1] = nk # set last element of result to nk
+        for i in range(m-1, 0, -1): # loop over days in reverse order
+            u1, v1 = uv[i] # get the edge
+
+            if nn[u1] < k or nn[v1] < k: # check if edge is invalid
+                res[i - 1] = nk # update result
+                continue # skip to next iteration
+            if nn[u1] == k: # check if degree is k
+                q.append(u1) # add node to queue
+                nn[u1] -= 1 # decrease degree
+            if not q and nn[v1] == k: # check if queue is empty and degree is k
+                q.append(v1) # add node to queue
+                nn[v1] -= 1 # decrease degree
+
+            if not q: # check if queue is empty
+                nn[u1] -= 1 # decrease degree
+                nn[v1] -= 1 # decrease degree
+                adj[u1].remove(v1) # remove edge from adjacency list
+                adj[v1].remove(u1) # remove edge from adjacency list
+
+            while q: # process queue
+                v = q.popleft() # get the first node in the queue
+                nk -= 1 # decrease count of nodes with degree >= k
+                for u in adj[v]: # loop over neighbors of the node
+                    nn[u] -= 1 # decrease degree of neighbor
+                    if nn[u] == k - 1: # check if degree is k-1
+                        q.append(u) # add neighbor to queue
+            res[i - 1] = nk # update result
+        return res # return result
+
+    n, m, k = map(int, input().split()) # read input values
+    a = [set() for i in range(n)] # initialize adjacency list for graph
+    uv = [] # initialize list for edges
+    for i in range(m): # loop over the edges
+        u, v = map(int, input().split()) # read edge endpoints
+        a[u - 1].add(v - 1) # add edge to adjacency list
+        a[v - 1].add(u - 1) # add edge to adjacency list
+        uv.append((u-1, v-1)) # store edge in uv
+
+    res = solve(a, m, k, uv) # call solve function to compute result
+    print(str(res)[1:-1].replace(' ', '').replace(',', '\n')) # print the result
+  pc_lbl: |
+    - Read three integers n, m, and k
+    - Create an adjacency list and list to keep track of friendship pairs
+    - For each day
+    - read the two friends that formed on that day
+    - add them to the adjacency list and to the pairs list
+    - Call the solve function which will calculate the maximum people can go on the trip for each day
+    - Define the solve function
+    - It initially keeps track of number of friends of each person in nn[] array
+    - For all those persons who have friends less than required friends
+        - add them to deque q
+    - While the deque q is not empty
+        - find the neighbours in the adjacency list and subtract the neighbour count by one
+        - If this count becomes equals to required friends
+        - add the neighbour to deque q
+    - calculate the result for this day
+    - repeat the above steps for all days from last to first
+        - if the pair of friends for that day has friend count less than k
+        - just copy the result of next day to the current day
+        - continue to the next day
+        - if the pair of friends for that day has friend count equals to k
+        - add them to deque q
+        - subtract the neighbour count by one
+        - if the deque q is empty
+        - subtract the neighbour count by one
+        - remove the pair of friends from the adjacency list
+        - While the deque q is not empty
+        - pop the front element from the deque q
+        - decrement the number of candidates by one
+        - find the neighbours in the adjacency list and subtract the neighbour count by one
+        - If this count becomes equals to required friends
+            - add the neighbour to deque q
+        - put the number of candidates in the result array for this day
+    - Print the result for each day by replacing unwanted characters in the result array such as brackets, commas and spaces with newline characters
+  pc_lbl_2: |
+    - Initialize an adjacency list `friends` with n empty lists to store the friendship relations for each person.
+    - Initialize a list `trip_sizes` of size m with all elements set to 0 to store the result for each day.
+    - Define a helper function `can_go_on_trip(selected_people)`:
+        - Initialize a counter `eligible_count` to 0.
+        - For each person `p` in `selected_people`:
+            - Count the number of friends of `p` in `selected_people`.
+            - If the count is at least k, increment `eligible_count`.
+        - If `eligible_count` equals the size of `selected_people`, return True.
+        - Otherwise, return False.
+    - For each day i from 1 to m:
+        - Parse x and y from the input, the two persons who become friends on this day.
+        - Add y to `friends[x]` and x to `friends[y]`.
+
+        - Initialize a queue `queue` with all people from 1 to n.
+        - Initialize a set `selected_people` as empty.
+        - While `queue` is not empty:
+            - Pop the first person from `queue` and add them to `selected_people`.
+            - Check if `can_go_on_trip(selected_people)` returns True:
+                - If True, continue with the next iteration.
+                - If False, remove the last added person from `selected_people`.
+        - Update `trip_sizes[i - 1]` to the size of `selected_people`.
+    - Print all elements of `trip_sizes` line by line.
+  ranking_pc: |
+    Pseudocode 1 is more efficient and suitable for this problem. It leverages a systematic approach by iterating through days in reverse to dynamically maintain and calculate the maximum number of people who can go on the trip. It uses an adjacency list and efficiently handles updates with a deque, ensuring it can handle the problem constraints.
+
+    Pseudocode 2, on the other hand, is less efficient as it involves recalculating eligibility for all people from scratch every day, which can become computationally expensive given the constraints (n, m ≤ 2 ⋅ 10^5).
+
+    ```plaintext
+    1
+    ```
+  pc_func: | # middle abstracted pseudocode
+    def solve(adj, m, k, uv):
+        nn, q = initialize_degrees_and_queue(adj, k)  # Initialize degrees and queue with nodes of degree less than k
+        process_queue(q, adj, nn, k)  # Remove nodes with degree less than k and update degrees
+        res = initialize_result_list(m)  # Initialize result list of size m
+        nk = count_nodes_with_degree_at_least_k(nn, k)  # Count nodes with degree ≥ k after initial removal
+        res[-1] = nk  # Set last element of result to nk
+
+        for i in reversed(range(1, m)):  # Process edges in reverse order
+            u1, v1 = get_edge_to_remove(uv, i)  # Get the edge to remove at step i
+            if nodes_have_degree_less_than_k(nn, u1, v1, k):  # Check if either node has degree less than k
+                res[i - 1] = nk  # Update result at position i - 1 with current node count
+                continue  # Skip to next iteration
+            process_nodes_with_degree_k(u1, v1, nn, q, k)  # Process nodes u1 and v1 with degree exactly k
+            if not q:
+                remove_edge_and_update_degrees(u1, v1, adj, nn)  # Remove edge and decrease degrees
+            nk = process_queue_and_update_nk(q, adj, nn, nk, k)  # Process queue and update nk
+            res[i - 1] = nk  # Update result at position i - 1
+        return res  # Return the result list
+
+    n, m, k = read_input_parameters()  # Read the number of nodes, edges, and minimum degree k
+    adj, uv = read_edges_and_build_graph(n, m)  # Build adjacency list and list of edges from input
+    res = solve(adj, m, k, uv)  # Compute the result based on the graph and k
+    print_results(res)  # Output the results in the required format
+  pc_nl: | # pure natural language pseudocode
+    Function solve(adj, m, k, uv)
+        Initialize degrees and queue with nodes of degree less than k
+        Remove nodes with degree less than k and update degrees
+        Initialize result list of size m
+        Count nodes with degree ≥ k after initial removal
+        Set last element of result to nk
+
+        Process edges in reverse order
+            Get the edge to remove at step i
+            Check if either node has degree less than k
+                Update result at position i - 1 with current node count
+                Skip to next iteration
+            Process nodes u1 and v1 with degree exactly k
+            If queue is empty
+                Remove edge and decrease degrees
+            Process queue and update nk
+            Update result at position i - 1
+
+        Return the result list
+
+    Read the number of nodes, edges, and minimum degree k
+    Build adjacency list and list of edges from input
+    Compute the result based on the graph and k
+    Output the results in the required format
+  tc_input: "2 1 1\n2 1\n"
+  tc_output-vanilla: |
+    {
+        "explanation": "Since there are only 2 people and they become friends on day 1, both have exactly 1 friend (each other), which meets the requirement of k=1. Therefore, both can go on the trip on day 1. The maximum number of people that can go on the trip on day 1 is 2.",
+        "output": "2"
+    }
+  tc_output-lbl-pdb: |
+    {
+        "pdb_log": [
+            {
+                "prev_line": 55,
+                "explanation": "Step into the solve function.",
+                "command": "s",
+                "output": "",
+                "current_line": 2
+            },
+            {
+                "prev_line": 2,
+                "explanation": "Execute the next line and print n.",
+                "command": "n, p n",
+                "output": "2",
+                "current_line": 3
+            },
+            {
+                "prev_line": 3,
+                "explanation": "Execute the next line and print nn.",
+                "command": "n, p nn",
+                "output": "[1, 1]",
+                "current_line": 4
+            },
+            {
+                "prev_line": 4,
+                "explanation": "Skip the initial while loop as queue is empty.",
+                "command": "until 14",
+                "output": "",
+                "current_line": 14
+            },
+            {
+                "prev_line": 14,
+                "explanation": "Execute the next line and print nk.",
+                "command": "n, p nk",
+                "output": "2",
+                "current_line": 16
+            },
+            {
+                "prev_line": 16,
+                "explanation": "Print the result before returning.",
+                "command": "p res",
+                "output": "[2]",
+                "current_line": 44
+            },
+            {
+                "prev_line": 44,
+                "explanation": "Continue execution to print the final output.",
+                "command": "c",
+                "output": "2",
+                "current_line": 56
+            }
+        ],
+        "output": "2"
+    }
+  tc_output-func-pdb: |
+    {
+        "pdb_log": [
+            {
+                "prev_line": 22,
+                "explanation": "Step into the solve function.",
+                "command": "s",
+                "output": "",
+                "current_line": 2
+            },
+            {
+                "prev_line": 2,
+                "explanation": "Initialize degrees nn and queue q.",
+                "command": "n, p nn, p q",
+                "output": "nn = [1, 1]\nq = []",
+                "current_line": 3
+            },
+            {
+                "prev_line": 3,
+                "explanation": "Process queue q (which is empty).",
+                "command": "n",
+                "output": "",
+                "current_line": 4
+            },
+            {
+                "prev_line": 4,
+                "explanation": "Initialize result list res.",
+                "command": "n, p res",
+                "output": "res = [0]",
+                "current_line": 5
+            },
+            {
+                "prev_line": 5,
+                "explanation": "Count nodes with degree ≥ k.",
+                "command": "n, p nk",
+                "output": "nk = 2",
+                "current_line": 6
+            },
+            {
+                "prev_line": 6,
+                "explanation": "Update res[-1] with nk.",
+                "command": "n, p res",
+                "output": "res = [2]",
+                "current_line": 8
+            },
+            {
+                "prev_line": 8,
+                "explanation": "Check the for loop range (which is empty).",
+                "command": "n, p list(reversed(range(1, m)))",
+                "output": "[]",
+                "current_line": 18
+            },
+            {
+                "prev_line": 18,
+                "explanation": "Return res from the solve function.",
+                "command": "r, p res",
+                "output": "res = [2]",
+                "current_line": 22
+            },
+            {
+                "prev_line": 22,
+                "explanation": "Print the final output.",
+                "command": "c",
+                "output": "2",
+                "current_line": 23
+            }
+        ],
+        "output": "2"
+    }
+  tc_output-nl-pdb: |
+    {
+        "pdb_log": [
+            {
+                "prev_line": 23,
+                "explanation": "Step into the solve function.",
+                "command": "s",
+                "output": "",
+                "current_line": 1
+            },
+            {
+                "prev_line": 1,
+                "explanation": "Initialize degrees nn and queue q.",
+                "command": "n, p nn, p q",
+                "output": "nn = [1, 1]\nq = []",
+                "current_line": 2
+            },
+            {
+                "prev_line": 2,
+                "explanation": "Process queue q (which is empty).",
+                "command": "n",
+                "output": "",
+                "current_line": 3
+            },
+            {
+                "prev_line": 3,
+                "explanation": "Initialize result list res.",
+                "command": "n, p res",
+                "output": "res = [0]",
+                "current_line": 4
+            },
+            {
+                "prev_line": 4,
+                "explanation": "Count nodes with degree ≥ k.",
+                "command": "n, p nk",
+                "output": "nk = 2",
+                "current_line": 5
+            },
+            {
+                "prev_line": 5,
+                "explanation": "Set last element of result to nk.",
+                "command": "n, p res",
+                "output": "res = [2]",
+                "current_line": 7
+            },
+            {
+                "prev_line": 7,
+                "explanation": "Process edges in reverse order (loop is empty).",
+                "command": "n, p list(reversed(range(1, m)))",
+                "output": "[]",
+                "current_line": 19
+            },
+            {
+                "prev_line": 19,
+                "explanation": "Return res from the solve function.",
+                "command": "r, p res",
+                "output": "res = [2]",
+                "current_line": 23
+            },
+            {
+                "prev_line": 23,
+                "explanation": "Print the final output.",
+                "command": "c",
+                "output": "2",
+                "current_line": 24
+            }
+        ],
+        "output": "2"
+    }
+  tc_output-func-bpt: |
+    Let's break down the problem step by step for the given input:
+
+    ### Input
+    ```
+    2 1 1
+    2 1
+    ```
+
+    - `n = 2`: There are 2 people.
+    - `m = 1`: There is 1 day.
+    - `k = 1`: Each person on the trip must have at least 1 friend also on the trip.
+    - Day 1 friendship: Person 2 and Person 1 become friends.
+
+    ### Pseudocode Execution
+
+    1. **Adjacency list initialization:**
+      - We create an adjacency list `a` to represent friendships:
+        - `a = [{}, {}]` (Initially, no one is friends with anyone.)
+
+    2. **Reading friendship information:**
+      - On day 1, Person 2 and Person 1 become friends.
+        - `a = [{1}, {0}]`
+        - Person 1 is friends with Person 2 and vice versa.
+      - `uv = [(1, 0)]` (Store the friendship between Person 1 and Person 2.)
+
+    3. **Solve function logic:**
+      - Initialize `nn` to represent the degrees (number of friends) of each person:
+        - `nn = [1, 1]` (Each person has exactly 1 friend after the friendship is established.)
+      - Initialize a queue `q`:
+        - Since both persons have at least 1 friend (equal to `k`), the queue remains empty, and we don't need to eliminate anyone from the trip yet.
+
+    4. **Processing Day 1:**
+      - The maximum number of people that can go on the trip is determined by counting how many people have at least `k` friends:
+        - Both Person 1 and Person 2 have exactly 1 friend (which meets the requirement of `k = 1`).
+        - So, both can go on the trip, and the answer for day 1 is `2`.
+
+    ### Output Reasoning:
+    For the given test case, on day 1, both people can go on the trip since they each have 1 friend.
+
+    ### Final Expected Output:
+    ```
+    2
+    ```
+  tc_output-nl-bpt: |
+    Let's break down the problem and evaluate the input step by step:
+
+    ### Problem Recap:
+    We have 2 persons (n = 2) and 1 day (m = 1). The condition for a person to go on the trip is that they need at least 1 (k = 1) friend who is also going on the trip.
+
+    ### Input:
+    ```
+    2 1 1
+    2 1
+    ```
+
+    This means:
+    - There are 2 people.
+    - There is 1 day.
+    - Each person needs at least 1 friend to go on the trip.
+    - On the morning of the first day, persons 2 and 1 become friends.
+
+    ### Step-by-step Evaluation:
+    1. **Initial state:**
+      - There are 2 people (person 1 and person 2).
+      - No one knows each other yet.
+
+    2. **Day 1:**
+      - On the morning of day 1, persons 2 and 1 become friends.
+      - Now, we want to plan a trip for the evening. For any person to go on the trip, they need at least 1 friend who is also going on the trip.
+      - Both persons 1 and 2 are friends now, so either one of them can go, and the other will have their friend on the trip too.
+
+      Hence, on day 1, the maximum number of people that can go on the trip is 2.
+
+    ### Final Output:
+    After processing the input, the output is as follows:
+    ```
+    2
+    ```
+  tc_output-lbl-bp: |
+    Let's go through this step by step with the given input to predict the output.
+
+    Input Analysis
+
+    We have:
+
+        - n = 2 : two people.
+        - m = 1 : one day.
+        - k = 1 : each person on the trip should have at least one friend going on the trip.
+
+    On the first and only day, we are given a friendship pair:
+
+        - Day 1: persons 2 and 1 become friends.
+
+    Steps to Solution
+
+    Day 1
+
+        1. On Day 1, persons 1 and 2 become friends.
+        2. To form a valid group for the trip, each person in the group must have at least  k = 1  friend within the group.
+        3. After persons 1 and 2 become friends, each has exactly one friend (each other), which meets the requirement  k = 1 .
+        4. Therefore, both persons 1 and 2 can go on the trip together.
+
+    Conclusion
+
+    On Day 1, the maximum number of people who can go on the trip is 2.
+
+    Final Output
+    ```
+    2
+    ```

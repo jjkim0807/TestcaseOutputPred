@@ -1,0 +1,18 @@
+# Inputs
+```plaintext
+{{ text }}
+```
+
+# Instruction
+I provided you a llm response about choosing the correct pseudocode solution.
+Your task is to parse the response into json format.
+You only need to provide the answer in the json format.
+DO NOT include the reasoning or any other information in the json format.
+Package the answer with three backticks and the json tag as shown below.
+
+# Output Format{% raw %}
+```json
+{
+    "answer": "{{ 1 or 2 }}"
+}
+```{% endraw %}

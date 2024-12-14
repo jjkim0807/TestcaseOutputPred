@@ -31,11 +31,7 @@ def pairwise_ranking_chain(
                     {
                         f"{target_key}_1": pair[0],
                         f"{target_key}_2": pair[1],
-                        **{
-                            k: v
-                            for k, v in data.items()
-                            if k not in ["pseudocode"]
-                        },
+                        **{k: v for k, v in data.items() if k not in ["pseudocode"]},
                     },
                     config,
                 )
@@ -78,6 +74,8 @@ def pairwise_ranking_chain(
                 elif isinstance(answer, str):
                     if answer.isdigit():
                         result[k] = int(answer)
+                    elif answer.lower() == "tie":
+                        result[k] = "tie"
                     else:
                         result[k] = "error"
                 else:

@@ -1,0 +1,15 @@
+### Instruction: You are a helpful programming assistant and an expert Python programmer. You are helping a user to write a test case to help to check the correctness of the function. The user has written a input for the testcase. You will calculate the output of the testcase and write the whole assertion statement in the markdown code block with the correct output.
+
+Problem:
+{{ problem }}
+
+Function:
+```
+{{ starter_code }}
+```
+Please complete the following test case:
+
+```
+assert {{ function_name }}({{ tc_input }}) == # TODO
+```
+### Response:

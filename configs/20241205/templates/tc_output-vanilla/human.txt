@@ -1,0 +1,27 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Starter code
+```python
+{{ starter_code }}
+```
+
+## Testcase Input
+```plaintext
+{{ tc_input }}
+```
+
+# Instruction
+I provided you a coding problem and a testcase input.
+You need to predict the testcase output.
+Here are some conditions.
+- Your final expected output should be always placed at the end of your response, enclosed by a pair of ```.
+
+# Output Format{% raw %}
+{{ reasoning }}
+```
+{{ expected_output }}
+```{% endraw %}

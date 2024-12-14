@@ -1,0 +1,25 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Starter code
+```python
+{{ starter_code }}
+```
+
+## Pseudocode 1
+```plaintext
+{{ pseudocode_1 }}
+```
+
+## Pseudocode 2
+```plaintext
+{{ pseudocode_2 }}
+```
+
+# Instruction
+I provided you a coding problem and its two pseudocode solutions.
+You need to choose the correct pseudocode solution among the two.
+Do not repeat the pseudocode in your answer.

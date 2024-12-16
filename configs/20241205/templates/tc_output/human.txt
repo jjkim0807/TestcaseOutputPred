@@ -27,6 +27,7 @@ Here are some conditions.
 - Your final expected output should be always placed at the end of your response, enclosed by a pair of ```.
 
 # Output Format{% raw %}
+{{ reasoning }}
 ```
 {{ expected_output }}
 ```{% endraw %}

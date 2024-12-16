@@ -1,0 +1,41 @@
+- id: 0-tae-complete-dyck-languages
+  problem: |
+    Given a string containing various types of parentheses (e.g., round brackets `()`, angle brackets `<>`, curly brackets `{}`, and square brackets `[]`), 
+    complete the string by appending the minimum number of closing parentheses necessary to form a well-formed sequence. 
+
+    A well-formed sequence is one where every opening parenthesis has a corresponding closing parenthesis of the same type, 
+    and the parentheses are correctly nested.
+
+    The input is a string consisting of opening and/or closing parentheses, 
+    and the output should be the completed string that is well-formed.    
+  starter_code: |
+    def complete_dyck_languages(input_text) :
+        pass
+  pseudocode: |
+    def complete_dyck_languages(input_text) :
+        # Step 1: Initialize a stack to keep track of open parentheses and split the input text to identify and define all types of open parentheses in the text.
+        stack = []
+        character_list = input_text.split()
+        open_to_close_parenthesis_dict = {"(": ")", "<": ">", "{": "}", "[": "]"}
+        opening_parenthesis = ["(", "<", "{", "["]
+        print(f"Parse characters in the input and initialize a stack to track of open parentheses. \nCurrent stack: {stack}. Parsed characters: {character_list}")
+        
+        # Step 2: Through iteration over the input characters, identify opening parentheses among the input characters and add them to the stack.
+        print("Check if a character is an opening parenthesis while iterating over the input characters.")
+        for char in character_list:
+            if char in opening_parenthesis:
+                print(f"Iteration {i+1}: Current character {char} is an opening parenthesis.")
+                stack.append(char)
+                print(f"Thus, we append {char} to the stack. Current stack after insertion: {', '.join(stack)}")
+            else:
+                print(f"Iteration {i+1}: Current character {char} is not an opening parenthesis.\nThus we delete the last item {stack[-1]} from the stack\ncurrent stack before deletion: {' '.join(stack)} -> updated stack after deletion: {' '.join(stack[:-1]) if stack else 'empty'}")
+                stack.pop()  # Remove the last added open parentheses assuming a correct match.
+        
+        # Step 3: For each open parentheses, find the corresponding closing parentheses and close the open parentheses.
+        print(f"The resulting stack is {' '.join(stack)}.")
+        print(f"We will need to pop out {' '.join(stack[::-1])} one by one in that order.")
+        closing_list = [open_to_close_parenthesis_dict[opening] for opening in stack[::-1]]
+        
+        # Step 4: Generate the sequence of closing parentheses based on remaining open parentheses in the stack.
+        # Step 5: Output the completed sequence. Generate the input sequence concatenated with the generated closing sequence of parentheses, ensuring a well-formed structure.
+        return " ".join(closing_list)

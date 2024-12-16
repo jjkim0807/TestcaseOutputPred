@@ -1,0 +1,114 @@
+source:
+  - name: livecodebench
+    type: json
+    kwargs:
+      sort_key: id
+      path: data/livecodebench_test.json
+  - name: example
+    type: yaml
+    kwargs:
+      sort_key: id
+      path: configs/20241205/icl_examples/livecodebench.yaml
+
+dataset:
+  - name: target
+    type: dict
+    kwargs:
+      primary_key: id
+      fields:
+        - name: id
+          source: livecodebench
+          key: id
+        - name: problem
+          source: livecodebench
+          key: question_content
+        - name: starter_code
+          source: livecodebench
+          key: starter_code
+        - name: testcase
+          source: livecodebench
+          key: test
+
+graph:
+  entry_point: initialize
+
+  edges:
+    - pair: [initialize, __end__]
+      type: always
+
+  nodes:
+    - name: initialize
+      chains:
+        - name: tc_input
+          dependencies: []
+          cache_root: results/20241203-lcb-gpt4omini-icl/results
+          input_keys: [testcase]
+          output_keys: [tc_input]
+          type: custom_lambda
+          kwargs:
+            src: ["testcase"]
+            distribute: False
+            func: |
+              def func(testcase):
+                  result = []
+                  for t in testcase:
+                      result.append(t[0]["input"])
+                  return result
+
+        - name: tc_output-gt
+          dependencies: []
+          cache_root: results/20241203-lcb-gpt4omini-icl/results
+          input_keys: [testcase]
+          output_keys: [tc_output-gt]
+          type: custom_lambda
+          kwargs:
+            src: ["testcase"]
+            distribute: False
+            func: |
+              def func(testcase):
+                  result = []
+                  for t in testcase:
+                      result.append(t[0]["output"])
+                  return result
+
+        - name: pseudocode
+          type: cot
+          dependencies: []
+          input_keys: [problem, starter_code]
+          output_keys: [pseudocode]
+          kwargs:
+            n: 5
+            flatten: true
+            disable_icl: True
+            llm:
+              max_tokens: 4096
+              model: gpt-4-turbo-2024-04-09
+              platform: openai
+              temperature: 0.8
+              top_p: 0.95
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241205/templates/pseudocode_tae"]
+
+        - name: tc_output-pred
+          dependencies: [pseudocode, tc_input]
+          input_keys: [problem, starter_code, pseudocode, tc_input]
+          output_keys: [tc_output-pred]
+          type: cot
+          kwargs:
+            disable_icl: True
+            llm:
+              max_tokens: 4096
+              model: gpt-4-turbo-2024-04-09
+              platform: openai
+              temperature: 0
+              top_p: 1
+            parsers:
+              - type: code_block
+            prompt:
+              type: chat
+              kwargs:
+                body_template_paths: ["configs/20241205/templates/tc_output-no_trace"]

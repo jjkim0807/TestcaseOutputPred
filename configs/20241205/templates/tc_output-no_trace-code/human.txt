@@ -9,8 +9,8 @@
 {{ starter_code }}
 ```
 
-## Pseudocode
-```plaintext
+## Code
+```python
 {{ pseudocode }}
 ```
 
@@ -20,7 +20,7 @@
 ```
 
 # Instruction
-I provided you a coding problem, its pseudocode and a testcase input.
+I provided you a coding problem, its possible python solution code and a testcase input.
 You need to predict the testcase output.
 Here are some conditions.
 - Your final expected output should be always placed at the end of your response, enclosed by a pair of ```.

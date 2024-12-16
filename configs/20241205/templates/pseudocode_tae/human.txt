@@ -1,0 +1,21 @@
+# Inputs
+## Problem
+```plaintext
+{{ problem }}
+```
+
+## Starter code
+```python
+{{ starter_code }}
+```
+
+# Instruction
+I provided you a coding problem.
+You need to write a pseudocode for the problem.
+Here are some conditions.
+- The output should be written in a separate code block using three backticks (```) at the beginning and end.
+
+# Output Format{% raw %}
+```plaintext
+{{ pseudocode }}
+```{% endraw %}

@@ -213,6 +213,9 @@ class Evaluator(BaseModel):
         with open(self._sc_reformulated_path[:-5] + "_cutoff_scores.txt", "w") as f:
             f.write(captured)
 
+    def exit(self):
+        pass
+
 
 if __name__ == "__main__":
     paths = [
@@ -222,10 +225,11 @@ if __name__ == "__main__":
         # "results/20241205-gpt4omini-vanilla/results_merged_1_transformed.json",
         # "results/20241205-gpt4omini-no_trace/results_merged_1.json",
         # "results/20241214-gpt4-tae/results_merged_1.json",
-        "results/20241214-gpt4-no_icl/results_merged_1.json",
-        "results/20241214-gpt4-ours_new/results_merged_1.json",
+        # "results/20241214-gpt4-no_icl/results_merged_1.json",
+        # "results/20241214-gpt4-ours_new/results_merged_1.json",
         # "results/20241214-gpt4omini-no_icl/results_merged_1.json",
         # "results/20241214-gpt4omini-ours_new/results_merged_1.json",
+        "results/20241214-gpt4-code_exec/results_merged_1.json",
     ]
     for path in paths:
         Evaluator(path=path, rerun=False).run()

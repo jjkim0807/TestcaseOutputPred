@@ -56,6 +56,9 @@ def selection_to_scores(raw_selection):
             scores[first] += 1
         elif v == 2:
             scores[second] += 1
+        elif v == "tie":
+            scores[first] += 0.5
+            scores[second] += 0.5
         else:
             # raise ValueError("Invalid selection")
             pass
@@ -64,8 +67,8 @@ def selection_to_scores(raw_selection):
 
 
 def main():
-    rank_path = "results/20241203-lcb-gpt4omini-zero/results_merged_1.json"
-    tc_out_path = "results/20241203-lcb-gpt4omini-zero/results_merged_1.json"
+    rank_path = "results/20241205-gpt4-best_ours-new_formatter/results_merged_1.json"
+    tc_out_path = "results/20241205-gpt4-best_ours-new_formatter/results_merged_1.json"
 
     with open(rank_path, "r") as f:
         rank_data = json.load(f)
@@ -81,12 +84,12 @@ def main():
         gt = t["tc_output-gt"][0]
 
         scores = selection_to_scores(raw_selection)
-        # scores = [1,1,1,1,1]
+        # scores = [1, 1, 1, 1, 1]
         for k in [1, 2, 5]:
             evals = []
             for g in gen:
                 evals.append(
-                    sum([g.strip() == t.strip() for g, t in zip(g, gt)]) / len(gt) # == 1
+                    sum([g.strip() == t.strip() for g, t in zip(g, gt)]) / len(gt) == 1
                 )
 
             acc = acc_at_k(evals, k, scores)

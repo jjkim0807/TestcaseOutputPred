@@ -1,15 +1,6 @@
 import json
 from pathlib import Path
 
-origin_path = Path("results/20240924-gpt-tc_output-none/results_merged_1.json")
-
-target_paths = [
-    Path("results/20241104-tc_output-vanilla-pc_lbl-pred/results_merged_1.json"),
-    # Path("results/20241104-tc_output-bp-pc_lbl-pred/results_merged_1.json"),
-    Path("results/20241104-tc_output-vanilla-pc_lbl-gt/results_merged_1.json"),
-    Path("results/20241104-tc_output-bp-pc_lbl-gt/results_merged_1.json"),
-]
-
 
 def parse_gen_output(gen_output):
     if gen_output.startswith("```json"):
@@ -64,12 +55,14 @@ def eval_or_str(s: str):
             return s
 
 
-def calc_acc(gt, gen):
-    acc = sum(
-        [eval_or_str(g.strip()) == eval_or_str(t.strip()) for g, t in zip(gen, gt)]
-    ) / len(gt)
+origin_path = Path("results/20240924-gpt-tc_output-none/results_merged_1.json")
 
-    return acc
+target_paths = [
+    Path("results/20241104-tc_output-vanilla-pc_lbl-pred/results_merged_1.json"),
+    Path("results/20241104-tc_output-bp-pc_lbl-pred/results_merged_1.json"),
+    Path("results/20241104-tc_output-vanilla-pc_lbl-gt/results_merged_1.json"),
+    Path("results/20241104-tc_output-bp-pc_lbl-gt/results_merged_1.json"),
+]
 
 
 def main(origin_path, target_path):
@@ -89,7 +82,9 @@ def main(origin_path, target_path):
         gen = [parse_gen_output(g) for g in gen]
         gt = origin["tc_output-gt"]
 
-        acc = calc_acc(gt, gen)
+        acc = sum(
+            [eval_or_str(g.strip()) == eval_or_str(t.strip()) for g, t in zip(gen, gt)]
+        ) / len(gt)
 
         total_acc += acc
         total_problem_wise_acc += acc == 1
@@ -99,6 +94,18 @@ def main(origin_path, target_path):
 
     print(f"{total_acc * 100:.2f},{total_problem_wise_acc * 100:.2f}")
 
+    new_path = target_path.parent / "eval_result_summary.json"
+    with open(new_path, "w") as f:
+        json.dump(
+            {
+                "total": total_acc,
+                "total_problem_wise": total_problem_wise_acc,
+            },
+            f,
+            indent=4,
+        )
 
-for target_path in target_paths:
-    main(origin_path, target_path)
+
+if __name__ == "__main__":
+    for target_path in target_paths:
+        main(origin_path, target_path)
